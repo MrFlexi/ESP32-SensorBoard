@@ -13,11 +13,8 @@
 
 Helios helios;
 
-
 double dAzimuth;
 double dElevation;
-
-
 
 Servo servoMain; // Define our Servo
 
