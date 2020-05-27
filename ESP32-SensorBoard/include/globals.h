@@ -4,9 +4,20 @@
 
 #define HAS_DISPLAY U8G2_SSD1306_128X64_NONAME_F_HW_I2C
 
+#define USE_WIFI 1
+#define USE_BME280 1
+#define USE_CAYENNE 0
+#define USE_MQTT 0
+
+#define HAS_PMU 0
+#define HAS_GPS 0
+#define USE_INA 1
+
+#define display_refresh 1      // every second
+
+#define ESP_SLEEP 0            // Main switch
 #define TIME_TO_SLEEP 1         // sleep for 1 minute
-#define TIME_TO_NEXT_SLEEP  2      // sleep after n minutes or
-#define SLEEP_AFTER_N_TX_COUNT 2   // after n Lora TX events
+#define TIME_TO_NEXT_SLEEP  5      // sleep after n minutes or
 
 #include <Arduino.h>
 #include <SPI.h>
@@ -19,6 +30,10 @@
 #include "esp_log.h"
 #include <Preferences.h>
 #include <ESP32Servo.h>
+#include <driver/gpio.h>
+#include "driver/pcnt.h"
+#include <NTPClient.h> // Internet Time Server
+
 #include <SimpleButton.h> 
 using namespace simplebutton;
 
@@ -47,10 +62,14 @@ typedef struct {
 
 extern int runmode;
 
+#include "jsutilities.h"
 #include "display.h"
 #include "gps.h"
-#include "i2cscan.h"
-#include "INA3221.h"
 #include "Helios.h"
+
+
+#if (USE_MQTT)
+#include <PubSubClient.h>
+#endif
 
 #endif

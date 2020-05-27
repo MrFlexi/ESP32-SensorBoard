@@ -114,10 +114,6 @@ void showPage(int page)
       drawSymbol(48, 50, RAIN);
     }
 
-    if (dataBuffer.data.txCounter >= SLEEP_AFTER_N_TX_COUNT)
-    {
-      drawSymbol(1, 48, SUN);
-    }
     
     u8g2.setFont(u8g2_font_profont11_mf);
     u8g2.setCursor(1, 52);

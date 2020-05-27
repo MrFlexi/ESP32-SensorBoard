@@ -1,23 +1,107 @@
-#define USE_WIFI 1
-#define USE_BME280 1
-#define USE_CAYENNE 0
-#define USE_MQTT 0
 
-#define HAS_PMU 0
-#define HAS_GPS 0
+//------------------------------------------------------
+//               PINOUT
+//        GPIO        Function
+//        21          SDA
+//        22          SCL
+//        32          Lichtschranke   Richtung
+//        33          Lichtschranke   Puls
+//        34          Servo
+
+
 
 #define LOG_LOCAL_LEVEL ESP_LOG_DEBUG
 
 #include "globals.h"
 
-
+//--------------------------------------------------------------------------
+// Sun Elevation Calculation
+//--------------------------------------------------------------------------
 Helios helios;
 
 double dAzimuth;
 double dElevation;
 
+//----------------------------------------------------------------------
+// Lichtschranke Pins
+//----------------------------------------------------------------------
+gpio_num_t aPinNumber = GPIO_NUM_33;
+gpio_num_t bPinNumber = GPIO_NUM_32;
+
+
+//----------------------------------------------------------------------
+// Puls Counter
+//----------------------------------------------------------------------
+unsigned long durationA;
+unsigned long durationB;
+volatile int32_t 	count=0;
+pcnt_unit_t 		unit = PCNT_UNIT_0;
+pcnt_config_t r_enc_config;
+
+
+//--------------------------------------------------------------------------
+// Sensors
+//--------------------------------------------------------------------------
+#define SERVO_PIN   GPIO_NUM_34
 Servo servoMain; // Define our Servo
 
+
+//--------------------------------------------------------------------------
+// Sensors
+//--------------------------------------------------------------------------
+SDL_Arduino_INA3221 ina3221;    // I2C 
+
+//--------------------------------------------------------------------------
+// get time from internet
+//--------------------------------------------------------------------------
+WiFiUDP ntpUDP;
+NTPClient timeClient(ntpUDP, "europe.pool.ntp.org", 7200); // 7200 = + 2h
+
+
+int16_t getCountRaw() {
+	int16_t c;
+	pcnt_get_counter_value(unit, &c);
+	return c;
+}
+
+
+void setup_pulsecounter(){
+
+	// Puls Counter Setup
+	gpio_pad_select_gpio(aPinNumber);
+	gpio_set_direction(aPinNumber, GPIO_MODE_INPUT);
+	gpio_pulldown_en(aPinNumber);
+	
+	r_enc_config.pulse_gpio_num = aPinNumber; 	//Rotary Encoder Chan A 
+	r_enc_config.ctrl_gpio_num = bPinNumber;    //Rotary Encoder Chan B
+
+	r_enc_config.unit = unit;
+	r_enc_config.channel = PCNT_CHANNEL_0;
+
+	r_enc_config.pos_mode = PCNT_COUNT_INC; 	//Count Only On Rising-Edges
+	r_enc_config.neg_mode = PCNT_COUNT_DIS;   	// Discard Falling-Edge
+
+	r_enc_config.lctrl_mode = PCNT_MODE_KEEP;    // Rising A on HIGH B = CW Step
+	r_enc_config.hctrl_mode = PCNT_MODE_REVERSE; // Rising A on LOW B = CCW Step
+
+	r_enc_config		.counter_h_lim = INT16_MAX;
+	r_enc_config		.counter_l_lim = INT16_MIN ;
+	
+	pcnt_unit_config(&r_enc_config);
+
+	// Filter out bounces and noise
+	pcnt_set_filter_value(unit, 250);  // Filter Runt Pulses
+	pcnt_filter_enable(unit);
+  
+  /* Enable events on  maximum and minimum limit values */
+	//pcnt_event_enable(unit, PCNT_EVT_H_LIM);
+	//pcnt_event_enable(unit, PCNT_EVT_L_LIM);
+
+	pcnt_counter_pause(unit); // Initial PCNT init
+	pcnt_counter_clear(unit);
+	pcnt_intr_enable(unit);
+	pcnt_counter_resume(unit);
+}
 
 void servo_sweep()
 {
@@ -27,7 +111,6 @@ delay(2000); // Wait 1 second
 
 servoMain.write(180); // Turn Servo Left to 45 degrees
 delay(2000); // Wait 1 second
-
 
 servoMain.write(45); // Turn Servo Left to 45 degrees
 delay(1000); // Wait 1 second
@@ -42,8 +125,6 @@ delay(1000); // Wait 1 second
 servoMain.write(90); // Turn Servo back to center position (90 degrees)
 delay(1000); // Wait 1 second
 }
-
-
 
 
 //--------------------------------------------------------------------------
@@ -72,11 +153,10 @@ Button* b = NULL;
 //--------------------------------------------------------------------------
 // ESP Sleep Mode
 //--------------------------------------------------------------------------
-#define ESP_SLEEP 0            // Main switch
+
 const float sleepPeriod = 2;   //seconds
 #define uS_TO_S_FACTOR 1000000 //* Conversion factor for micro seconds to seconds */
 
-#define display_refresh 1      // every second
 #define uS_TO_S_FACTOR 1000000 /* Conversion factor for micro seconds to seconds */
 #define SEALEVELPRESSURE_HPA (1013.25)
 
@@ -93,40 +173,11 @@ const char ssid[] = "MrFlexi";
 const char wifiPassword[] = "Linde-123";
 WiFiClient wifiClient;
 
-void print_ina()
-{
-  Serial.println("------------------------------");
-  float shuntvoltage1 = 0;
-  float busvoltage1 = 0;
-  float current_mA1 = 0;
-  float loadvoltage1 = 0;
-
-  busvoltage1 = ina3221.getBusVoltage_V(1);
-  shuntvoltage1 = ina3221.getShuntVoltage_mV(1);
-  current_mA1 = -ina3221.getCurrent_mA(1); // minus is to get the "sense" right.   - means the battery is charging, + that it is discharging
-  loadvoltage1 = busvoltage1 + (shuntvoltage1 / 1000);
-
-  Serial.print("LIPO_Battery Bus Voltage:   ");
-  Serial.print(busvoltage1);
-  Serial.println(" V");
-  Serial.print("LIPO_Battery Shunt Voltage: ");
-  Serial.print(shuntvoltage1);
-  Serial.println(" mV");
-  Serial.print("LIPO_Battery Load Voltage:  ");
-  Serial.print(loadvoltage1);
-  Serial.println(" V");
-  Serial.print("LIPO_Battery Current 1:       ");
-  Serial.print(current_mA1);
-  Serial.println(" mA");
-  Serial.println("");
-}
 
 //--------------------------------------------------------------------------
 // MQTT
 //--------------------------------------------------------------------------
-#if (USE_MQTT)
-#include <PubSubClient.h>
-#endif
+
 //const char *mqtt_server = "192.168.1.144"; // Laptop
 //const char *mqtt_server = "test.mosquitto.org"; // Laptop
 const char *mqtt_server = "192.168.1.100"; // Raspberry
@@ -136,9 +187,7 @@ const char *mqtt_topic = "mrflexi/solarserver/";
 PubSubClient client(wifiClient);
 long lastMsgAlive = 0;
 long lastMsgDist = 0;
-#endif
 
-#if (USE_MQTT)
 void callback(char *topic, byte *payload, unsigned int length)
 {
   Serial.print("Message arrived [");
@@ -207,10 +256,6 @@ void setup_mqtt()
 }
 #endif
 
-
-
-
-
 void save_uptime()
 {
   uptime_seconds_new = uptime_seconds_old + uptime_seconds_actual;
@@ -218,34 +263,7 @@ void save_uptime()
   Serial.println("ESP32 total uptime" + String(uptime_seconds_new) + " Seconds");
 }
 
-void print_wakeup_reason()
-{
-  esp_sleep_wakeup_cause_t wakeup_reason;
 
-  wakeup_reason = esp_sleep_get_wakeup_cause();
-
-  switch (wakeup_reason)
-  {
-  case ESP_SLEEP_WAKEUP_EXT0:
-    Serial.println("Wakeup caused by external signal using RTC_IO");
-    break;
-  case ESP_SLEEP_WAKEUP_EXT1:
-    Serial.println("Wakeup caused by external signal using RTC_CNTL");
-    break;
-  case ESP_SLEEP_WAKEUP_TIMER:
-    Serial.println("Wakeup caused by timer");
-    break;
-  case ESP_SLEEP_WAKEUP_TOUCHPAD:
-    Serial.println("Wakeup caused by touchpad");
-    break;
-  case ESP_SLEEP_WAKEUP_ULP:
-    Serial.println("Wakeup caused by ULP program");
-    break;
-  default:
-    Serial.printf("Wakeup was not caused by deep sleep: %d\n", wakeup_reason);
-    break;
-  }
-}
 
 void setup_sensors()
 {
@@ -287,7 +305,7 @@ void t_sleep()
   // Deep sleep
   //-----------------------------------------------------
 #if (ESP_SLEEP)
-  if (dataBuffer.data.sleepCounter <= 0 || dataBuffer.data.txCounter >= SLEEP_AFTER_N_TX_COUNT)
+  if (dataBuffer.data.sleepCounter <= 0 )
   {
     runmode = 0;
     gps.enable_sleep();
@@ -335,7 +353,7 @@ void setup_wifi()
     delay(1000);
     ESP_LOGI(TAG, "Connecting to WiFi..");
   }
-  //ESP_LOGI(TAG, String(WiFi.localIP()) );
+  timeClient.begin();
 #endif
 }
 
@@ -370,6 +388,7 @@ void setup()
   ESP_LOGI(TAG, "Starting..");
   Serial.println(F("ESP32 Sensor Board"));
   i2c_scan();
+  setup_pulsecounter();
 
   ina3221.begin();
   Serial.print("Manufactures ID=0x");
@@ -411,7 +430,7 @@ void setup()
 // Calc Sun Position München
 Serial.println("");
 Serial.println("Sun Azimuth and Elevation Munich");
-helios.calcSunPos(2019,10,18,11.00,00.00,00.00,11.54184,48.15496); 
+helios.calcSunPos(2020,05,27,16.00,00.00,00.00,11.54184,48.15496); 
 
 dAzimuth=helios.dAzimuth;show("dAzimuth",dAzimuth,true);
 dElevation=helios.dElevation;show("dElevation",dElevation,true);
@@ -424,18 +443,15 @@ b = new Button(39);  // Boot Button
     b->setOnDoubleClicked([]() {
         Serial.println("doubleclicked");
     });
-
     b->setOnClicked([]() {
         Serial.println("clicked");
     });
-
     b->setOnHolding([]() {
         Serial.println("holding");
     });
 
 
-
-servoMain.attach(17); // servo on digital pin 10
+servoMain.attach(SERVO_PIN); // servo on digital pin 10
 
 servo_sweep();
 
