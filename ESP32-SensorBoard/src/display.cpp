@@ -22,8 +22,7 @@ void setup_display(void)
   u8g2log.setLineHeightOffset(0);                               // set extra space between lines in pixel, this can be negative
   u8g2log.setRedrawMode(0);                                     // 0: Update screen with newline, 1: Update screen for every char
   u8g2.enableUTF8Print();
-  log_display("SAP GTT");
-  log_display("TTN-ABP-Mapper");
+  log_display("ESP32 Sensor Board");
 }
 
 void drawSymbol(u8g2_uint_t x, u8g2_uint_t y, uint8_t symbol)
@@ -72,7 +71,7 @@ void showPage(int page)
   uint8_t icon = 0;
 
   u8g2.setFont(u8g2_font_ncenB12_tr);
-  u8g2.drawStr(1, 15, "   SAP GTT  ");
+  u8g2.drawStr(1, 15, "  Sensors  ");
 
   switch (page)
   {
@@ -85,18 +84,24 @@ void showPage(int page)
     u8g2.printf("%02d:%02d:%02d", gps.tGps.time.hour(), gps.tGps.time.minute(), gps.tGps.time.second());
 
     u8g2.setCursor(1, 40);
-    u8g2.printf("Alt:%.4g", gps.tGps.altitude.meters());
-    u8g2.setCursor(1, 50);
-    u8g2.printf("Len:%.2d", dataBuffer.data.lmic.dataLen);
-    u8g2.setCursor(64, 50);
-    u8g2.printf("TX:%.3d", dataBuffer.data.txCounter);
-    u8g2.setCursor(1, 50);
-    u8g2.printf("Sleep:%.2d", dataBuffer.data.sleepCounter);
+    u8g2.printf("Alt:%.4d", gps.tGps.altitude.meters());
+    
+    //u8g2.setCursor(64, 50);
+    //u8g2.printf("TX:%.3d", dataBuffer.data.txCounter);
+    //u8g2.setCursor(1, 50);
+    //u8g2.printf("Sleep:%.2d", dataBuffer.data.sleepCounter);
+    
+    
+    u8g2.setCursor(1, 40);
+    u8g2.printf("Azi:%.2f", dataBuffer.data.sun_azimuth);
+    u8g2.setCursor(64, 40);
+    u8g2.printf("Ele:%.2f", dataBuffer.data.sun_elevation);
 
-#if (defined BAT_MEASURE_ADC || defined HAS_PMU)
-    u8g2.setCursor(1, 60);
-    u8g2.printf("%.2fV", dataBuffer.data.bat_voltage / 1000.0);
-#endif
+    u8g2.setCursor(1, 50);
+    u8g2.printf("Bat:%.2f V", dataBuffer.data.busvoltage1);
+    u8g2.setCursor(64, 50);
+    u8g2.printf("%.2f mA", dataBuffer.data.current_1);
+
     break;
 
   case PAGE_SLEEP:

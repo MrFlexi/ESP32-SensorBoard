@@ -9,8 +9,6 @@
 #define SLEEP_AFTER_N_TX_COUNT 2   // after n Lora TX events
 
 #include <Arduino.h>
-#include <lmic.h>
-#include <hal/hal.h>
 #include <SPI.h>
 #include <Ticker.h>
 #include "esp_sleep.h"
@@ -20,6 +18,9 @@
 #include <Adafruit_BME280.h>
 #include "esp_log.h"
 #include <Preferences.h>
+#include <ESP32Servo.h>
+#include <SimpleButton.h> 
+using namespace simplebutton;
 
 typedef struct {
   float iaq;             // IAQ signal
@@ -34,19 +35,22 @@ typedef struct {
   uint8_t sleepCounter;   // aliveCounter 
   uint8_t txCounter;   // aliveCounter    
   uint8_t bytesReceived;   
-  lmic_t  lmic;
   uint16_t bat_voltage = 0;
+  double  sun_azimuth;
+  double  sun_elevation;
+  float busvoltage1 = 0;
+  float current_1 = 0;
+  float current_2 = 0;
+  float current_3 = 0;
 } deviceStatus_t;
 
 
 extern int runmode;
 
-#include "../src/hal/ttgobeam.h"
 #include "display.h"
 #include "gps.h"
 #include "i2cscan.h"
-#include "power.h"
+#include "INA3221.h"
+#include "Helios.h"
 
-
-  
 #endif
