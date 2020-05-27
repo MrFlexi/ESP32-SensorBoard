@@ -301,6 +301,9 @@ void t_sleep()
 {
   dataBuffer.data.sleepCounter--;
 
+  timeClient.update();
+  Serial.println(timeClient.getFormattedTime());
+
   //-----------------------------------------------------
   // Deep sleep
   //-----------------------------------------------------
