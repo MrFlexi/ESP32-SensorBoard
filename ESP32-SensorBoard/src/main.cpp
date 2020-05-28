@@ -42,7 +42,7 @@ pcnt_config_t r_enc_config;
 //--------------------------------------------------------------------------
 // Sensors
 //--------------------------------------------------------------------------
-#define SERVO_PIN   GPIO_NUM_34
+#define SERVO_PIN   GPIO_NUM_26
 Servo servoMain; // Define our Servo
 
 

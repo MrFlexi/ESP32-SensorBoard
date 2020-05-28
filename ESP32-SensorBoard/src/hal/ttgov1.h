@@ -18,6 +18,12 @@
 #define LED_ACTIVE_LOW 1  // Onboard LED is active when pin is LOW
 #define HAS_BUTTON KEY_BUILTIN
 
+// GPS settings
+#define HAS_GPS 0 // use on board GPS
+#define GPS_RX GPIO_NUM_16
+#define GPS_TX GPIO_NUM_15
+#define GPS_INT GPIO_NUM_13 // 30ns accurary timepulse, to be external wired on pcb: NEO 6M Pin#3 -> GPIO13
+
 // Pins for I2C interface of OLED Display
 #define MY_OLED_SDA (4)
 #define MY_OLED_SCL (15)
