@@ -6,6 +6,10 @@
 #include "esp_spi_flash.h"
 #include <Wire.h>
 
+#if (USE_OTA)
+#include "SecureOTA.h"
+#endif
+
 int i2c_scan(void);
 void print_wakeup_reason();
 void print_wakeup_touchpad();
