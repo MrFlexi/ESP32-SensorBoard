@@ -38,11 +38,7 @@ pcnt_config_t r_enc_config;
 //--------------------------------------------------------------------------
 // Sensors
 //--------------------------------------------------------------------------
-<<<<<<< HEAD
-#define SERVO_PIN GPIO_NUM_34
-=======
-#define SERVO_PIN   GPIO_NUM_26
->>>>>>> f787a318f998dba17b34b094ec3f80481191c7f6
+#define SERVO_PIN GPIO_NUM_26
 Servo servoMain; // Define our Servo
 
 //--------------------------------------------------------------------------
@@ -50,11 +46,6 @@ Servo servoMain; // Define our Servo
 //--------------------------------------------------------------------------
 SDL_Arduino_INA3221 ina3221; // I2C
 
-//--------------------------------------------------------------------------
-// get time from internet
-//--------------------------------------------------------------------------
-WiFiUDP ntpUDP;
-NTPClient timeClient(ntpUDP, "europe.pool.ntp.org", 7200); // 7200 = + 2h
 
 //--------------------------------------------------------------------------
 // OTA Settings
@@ -300,12 +291,55 @@ void setup_sensors()
 #endif
 }
 
+
+void printLocalTime(){
+  struct tm timeinfo;
+  if(!getLocalTime(&timeinfo)){
+    Serial.println("Failed to obtain time");
+    return;
+  }
+
+
+  dataBuffer.data.timeinfo = timeinfo; 
+  Serial.println(dataBuffer.data.timeinfo.tm_year);
+
+
+  Serial.println(&timeinfo, "%A, %B %d %Y %H:%M:%S");
+  Serial.print("Day of week: ");
+  Serial.println(&timeinfo, "%A");
+  Serial.print("Month: ");
+  Serial.println(&timeinfo, "%B");
+  Serial.print("Day of Month: ");
+  Serial.println(&timeinfo, "%d");
+  Serial.print("Year: ");
+  Serial.println(&timeinfo, "%Y");
+  Serial.print("Hour: ");
+  Serial.println(&timeinfo, "%H");
+  Serial.print("Hour (12 hour format): ");
+  Serial.println(&timeinfo, "%I");
+  Serial.print("Minute: ");
+  Serial.println(&timeinfo, "%M");
+  Serial.print("Second: ");
+  Serial.println(&timeinfo, "%S");
+
+  Serial.println("Time variables");
+  char timeHour[3];
+  strftime(timeHour,3, "%H", &timeinfo);
+  Serial.println(timeHour);
+  char timeWeekDay[10];
+  strftime(timeWeekDay,10, "%A", &timeinfo);
+  Serial.println(timeWeekDay);
+  Serial.println();
+}
+
 void t_sleep()
 {
   dataBuffer.data.sleepCounter--;
 
-  timeClient.update();
-  Serial.println(timeClient.getFormattedTime());
+  // Init and get the time
+  configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
+  printLocalTime();
+
 
   //-----------------------------------------------------
   // Deep sleep
@@ -359,7 +393,6 @@ void setup_wifi()
     delay(1000);
     ESP_LOGI(TAG, "Connecting to WiFi..");
   }
-  timeClient.begin();
 #endif
 }
 
@@ -470,7 +503,7 @@ void setup()
 
   Serial.println("");
   Serial.println("Sun Azimuth and Elevation Munich");
-  helios.calcSunPos(2020, 05, 27, 16.00, 00.00, 00.00, 11.54184, 48.15496);
+  helios.calcSunPos(dataBuffer.data.timeinfo.tm_year, 05, 27, 16.00, 00.00, 00.00, 11.54184, 48.15496);
 
   dAzimuth = helios.dAzimuth;
   show("dAzimuth", dAzimuth, true);

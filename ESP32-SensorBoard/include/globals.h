@@ -11,7 +11,7 @@
 
 #define HAS_PMU 0
 #define HAS_GPS 0
-#define USE_INA 0
+#define USE_INA 1
 
 #define display_refresh 1      // every second
 
@@ -32,8 +32,16 @@
 #include <Preferences.h>
 #include <ESP32Servo.h>
 #include <driver/gpio.h>
+
 #include "driver/pcnt.h"
-#include <NTPClient.h> // Internet Time Server
+
+//--------------------------------------------------------
+// Time Server
+//--------------------------------------------------------
+#include <time.h>
+#define ntpServer "pool.ntp.org"
+#define gmtOffset_sec 3600
+#define daylightOffset_sec 3600
 
 #include <SimpleButton.h> 
 using namespace simplebutton;
@@ -58,6 +66,7 @@ typedef struct {
   float current_1 = 0;
   float current_2 = 0;
   float current_3 = 0;
+  tm timeinfo;
 } deviceStatus_t;
 
 
