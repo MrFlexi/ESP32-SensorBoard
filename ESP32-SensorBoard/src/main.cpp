@@ -298,11 +298,23 @@ void getLocalTime(){
 void adjust_panel()
 {
   int degree;
-  degree = 90 - dataBuffer.data.sun_elevation ;
+  degree = dataBuffer.data.sun_elevation ;
   Serial.printf("Panel degree: %d\n", degree);
-  servoMain.write(degree); // Turn Servo Left to 45 degrees
- 
-}
+  if (degree < 20)
+    {
+     degree = 20;
+    }
+
+  if (degree > 160)
+    {
+     degree = 160;
+    }
+
+   servoMain.attach(SERVO_PIN); // servo on digital pin 10
+   servoMain.write(degree); 
+   delay(1000);
+   servoMain.detach(); // 
+ }
 
 void t_cyclic()
 {
@@ -317,6 +329,7 @@ void t_cyclic()
   Serial.println();Serial.println();
   Serial.println("Sun Azimuth and Elevation Munich");
   helios.calcSunPos(2020, dataBuffer.data.timeinfo.tm_mon, dataBuffer.data.timeinfo.tm_mday, dataBuffer.data.timeinfo.tm_hour-2, dataBuffer.data.timeinfo.tm_min, 00.00, 11.57754, 48.13641);
+  //helios.calcSunPos(2020, dataBuffer.data.timeinfo.tm_mon, dataBuffer.data.timeinfo.tm_mday, 12, dataBuffer.data.timeinfo.tm_min, 00.00, 11.57754, 48.13641);
   dataBuffer.data.sun_azimuth = helios.dAzimuth;
   dataBuffer.data.sun_elevation = helios.dElevation;
  
@@ -325,7 +338,6 @@ void t_cyclic()
   Serial.printf("Elevation: %f3\n", helios.dElevation);
 
   adjust_panel();
-  delay(2000);
   
   //-----------------------------------------------------
   // Deep sleep
@@ -334,7 +346,7 @@ void t_cyclic()
   if (dataBuffer.data.sleepCounter <= 0)
   {
     runmode = 0;
-    gps.enable_sleep();
+    //gps.enable_sleep();
     Serial.flush();
     showPage(PAGE_SLEEP);
     esp_deep_sleep_start();
@@ -346,9 +358,13 @@ void t_cyclic()
 void t_display()
 {
   // Voltage and Current
+  ina3221.begin();
   dataBuffer.data.busvoltage1 = ina3221.getBusVoltage_V(1);
+  delay(100);
   dataBuffer.data.current_1 = ina3221.getCurrent_mA(1);
+  delay(100);
   dataBuffer.data.current_2 = ina3221.getCurrent_mA(2);
+  delay(100);
   dataBuffer.data.current_3 = ina3221.getCurrent_mA(3);
   delay(1000);
 
@@ -393,11 +409,9 @@ void setup()
 
   print_wakeup_reason();
   
-
   ESP_LOGI(TAG, "Starting..");
   Serial.println(F("ESP32 Sensor Board"));
-
- 
+  setup_wifi();
 
   //----------------------------------------
   // Read I2C Devices
@@ -422,8 +436,9 @@ void setup()
   dataBuffer.data.sleepCounter = TIME_TO_NEXT_SLEEP;
 
   setup_display();
+  display_sample();
   //setup_sensors();
-  setup_wifi();
+  
   configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
 
   //----------------------------------------
@@ -498,7 +513,7 @@ switch (esp_sleep_get_wakeup_cause())
     servo_sweep();
     break;
   }
-
+  delay(5000);
   t_cyclic();
 }
 

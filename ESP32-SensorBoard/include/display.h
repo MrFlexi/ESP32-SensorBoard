@@ -7,36 +7,56 @@
 #define _DISPLAY_H
 
 #include "globals.h"
-
-#define SUN	0
-#define SUN_CLOUD  1
-#define CLOUD 2
-#define RAIN 3
-#define THUNDER 4
-#define SLEEP 10
-#define ICON_NOTES 11
+#include <ss_oled.h>
 
 
 #define PAGE_VALUES 1
 #define PAGE_SLEEP 2
 
-// assume 4x6 font, define width and height
-#define U8LOG_WIDTH 32
-#define U8LOG_HEIGHT 6
+// ass#include <ss_oled.h>
 
-#include <U8g2lib.h>
+// if your system doesn't have enough RAM for a back buffer, comment out
+// this line (e.g. ATtiny85)
+#define USE_BACKBUFFER
 
-extern HAS_DISPLAY u8g2;             // 
-extern U8G2LOG u8g2log;             // Create a U8g2log object
+#ifdef USE_BACKBUFFER
+static uint8_t ucBackBuffer[1024];
+#else
+static uint8_t *ucBackBuffer = NULL;
+#endif
 
-// allocate memory
-extern uint8_t u8log_buffer[U8LOG_WIDTH * U8LOG_HEIGHT];
+//Use -1 for the Wire library default pins
+// or specify the pin numbers to use with the Wire library or bit banging on any GPIO pins
+// These are the pin numbers for the M5Stack Atom default I2C
+#define SDA_PIN SDA
+#define SCL_PIN SCL
+// Set this to -1 to disable or the GPIO pin number connected to the reset
+// line of your display if it requires an external reset
+#define RESET_PIN -1
+// let ss_oled figure out the display address
+#define OLED_ADDR -1
+// don't rotate the display
+#define FLIP180 0
+// don't invert the display
+#define INVERT 0
+// Bit-Bang the I2C bus
+#define USE_HW_I2C 1
 
+// Change these if you're using a different OLED display
+#define MY_OLED OLED_128x64
+#define OLED_WIDTH 128
+#define OLED_HEIGHT 64
+//#define MY_OLED OLED_64x32
+//#define OLED_WIDTH 64
+//#define OLED_HEIGHT 32
+
+
+void dp_printf(uint16_t x, uint16_t y, uint8_t font, uint8_t inv,
+               const char *format, ...);
 void log_display(String s);
 void setup_display(void);
 void showPage(int page);
-void drawSymbol(u8g2_uint_t x, u8g2_uint_t y, uint8_t symbol);
-
+void display_sample(void);
 
 class DataBuffer
 {
