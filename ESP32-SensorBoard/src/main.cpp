@@ -350,6 +350,7 @@ void t_display()
   dataBuffer.data.current_1 = ina3221.getCurrent_mA(1);
   dataBuffer.data.current_2 = ina3221.getCurrent_mA(2);
   dataBuffer.data.current_3 = ina3221.getCurrent_mA(3);
+  delay(1000);
 
    Serial.printf("Panel Voltage: %.2fV\n", dataBuffer.data.busvoltage1 );
    Serial.printf("Panel Current: %.0fmA\n", dataBuffer.data.current_1 );
@@ -391,6 +392,7 @@ void setup()
   Serial.println(" ");
 
   print_wakeup_reason();
+  
 
   ESP_LOGI(TAG, "Starting..");
   Serial.println(F("ESP32 Sensor Board"));
@@ -456,7 +458,7 @@ void setup()
   displayTicker.attach(display_refresh, t_display);
 
   runmode = 1; // Switch from Terminal Mode to page Display
-  //showPage(1);
+
 
 //---------------------------------------------------------------
 // Deep sleep settings
@@ -483,7 +485,20 @@ void setup()
 
   servoMain.attach(SERVO_PIN); // servo on digital pin 10
 
-  servo_sweep();
+ 
+//--------------------------------------------------------------------
+// Aktion after DeepSleep Wakeup
+//--------------------------------------------------------------------
+switch (esp_sleep_get_wakeup_cause())
+  {
+  case ESP_SLEEP_WAKEUP_TIMER:
+    Serial.println("by timer");
+    break;
+  default:
+    servo_sweep();
+    break;
+  }
+
   t_cyclic();
 }
 

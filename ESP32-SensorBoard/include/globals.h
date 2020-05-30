@@ -15,8 +15,8 @@
 
 #define display_refresh 10      // every second
 
-#define ESP_SLEEP 0            // Main switch
-#define TIME_TO_SLEEP 1         // sleep for 1 minute
+#define ESP_SLEEP 1           // Main switch
+#define TIME_TO_SLEEP 5        // sleep for n minute
 #define TIME_TO_NEXT_SLEEP  5      // sleep after n minutes or
 #define USE_OTA 1
 
@@ -71,6 +71,7 @@ typedef struct {
 
 
 extern int runmode;
+extern bool I2C_lock;
 
 #include "jsutilities.h"
 #include "display.h"

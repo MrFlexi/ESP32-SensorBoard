@@ -70,8 +70,7 @@ void showPage(int page)
   u8g2.clearBuffer();
   uint8_t icon = 0;
 
-  u8g2.setFont(u8g2_font_ncenB12_tr);
-  u8g2.drawStr(1, 15, "Solar Server ");
+  u8g2.setFont(u8g2_font_profont11_mf);
 
   switch (page)
   {
@@ -93,14 +92,11 @@ void showPage(int page)
     
     
     u8g2.setCursor(1, 30);
-    u8g2.printf("Azi:%.2f", dataBuffer.data.sun_azimuth);
-    u8g2.setCursor(64, 30);
-    u8g2.printf("Ele:%.2f", dataBuffer.data.sun_elevation);
-
+    u8g2.printf("Azi:%.2f  Ele:%.2f", dataBuffer.data.sun_azimuth, dataBuffer.data.sun_elevation);
+    
     u8g2.setCursor(1, 45);
-    u8g2.printf("Bat:%.2f V", dataBuffer.data.busvoltage1);
-    u8g2.setCursor(64, 45);
-    u8g2.printf("%.2f mA", dataBuffer.data.current_1);
+    u8g2.printf("Pannel:%.2f V %.2f mA", dataBuffer.data.busvoltage1, dataBuffer.data.current_1);
+    
 
     break;
 
