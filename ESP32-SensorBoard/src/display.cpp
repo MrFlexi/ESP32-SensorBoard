@@ -71,20 +71,20 @@ void showPage(int page)
   uint8_t icon = 0;
 
   u8g2.setFont(u8g2_font_ncenB12_tr);
-  u8g2.drawStr(1, 15, "  Sensors  ");
+  u8g2.drawStr(1, 15, "Solar Server ");
 
   switch (page)
   {
   case PAGE_VALUES:
 
-    u8g2.setFont(u8g2_font_profont11_mf);
-    u8g2.setCursor(1, 30);
-    u8g2.printf("Sats:%.2d", gps.tGps.satellites.value());
-    u8g2.setCursor(64, 30);
-    u8g2.printf("%02d:%02d:%02d", gps.tGps.time.hour(), gps.tGps.time.minute(), gps.tGps.time.second());
+    //u8g2.setFont(u8g2_font_profont11_mf);
+    //u8g2.setCursor(1, 30);
+    //u8g2.printf("Sats:%.2d", gps.tGps.satellites.value());
+    //u8g2.setCursor(64, 30);
+    //u8g2.printf("%02d:%02d:%02d", gps.tGps.time.hour(), gps.tGps.time.minute(), gps.tGps.time.second());
 
-    u8g2.setCursor(1, 40);
-    u8g2.printf("Alt:%.4d", gps.tGps.altitude.meters());
+    //u8g2.setCursor(1, 40);
+    //u8g2.printf("Alt:%.4d", gps.tGps.altitude.meters());
     
     //u8g2.setCursor(64, 50);
     //u8g2.printf("TX:%.3d", dataBuffer.data.txCounter);
@@ -92,14 +92,14 @@ void showPage(int page)
     //u8g2.printf("Sleep:%.2d", dataBuffer.data.sleepCounter);
     
     
-    u8g2.setCursor(1, 40);
+    u8g2.setCursor(1, 30);
     u8g2.printf("Azi:%.2f", dataBuffer.data.sun_azimuth);
-    u8g2.setCursor(64, 40);
+    u8g2.setCursor(64, 30);
     u8g2.printf("Ele:%.2f", dataBuffer.data.sun_elevation);
 
-    u8g2.setCursor(1, 50);
+    u8g2.setCursor(1, 45);
     u8g2.printf("Bat:%.2f V", dataBuffer.data.busvoltage1);
-    u8g2.setCursor(64, 50);
+    u8g2.setCursor(64, 45);
     u8g2.printf("%.2f mA", dataBuffer.data.current_1);
 
     break;

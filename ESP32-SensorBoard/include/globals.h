@@ -13,7 +13,7 @@
 #define HAS_GPS 0
 #define USE_INA 1
 
-#define display_refresh 1      // every second
+#define display_refresh 10      // every second
 
 #define ESP_SLEEP 0            // Main switch
 #define TIME_TO_SLEEP 1         // sleep for 1 minute

@@ -62,6 +62,9 @@ int16_t getCountRaw()
   return c;
 }
 
+
+
+
 void setup_pulsecounter()
 {
 
@@ -101,28 +104,7 @@ void setup_pulsecounter()
   pcnt_counter_resume(unit);
 }
 
-void servo_sweep()
-{
 
-  servoMain.write(0); // Turn Servo Left to 45 degrees
-  delay(2000);        // Wait 1 second
-
-  servoMain.write(180); // Turn Servo Left to 45 degrees
-  delay(2000);          // Wait 1 second
-
-  servoMain.write(45);  // Turn Servo Left to 45 degrees
-  delay(1000);          // Wait 1 second
-  servoMain.write(0);   // Turn Servo Left to 0 degrees
-  delay(1000);          // Wait 1 second
-  servoMain.write(90);  // Turn Servo back to center position (90 degrees)
-  delay(1000);          // Wait 1 second
-  servoMain.write(135); // Turn Servo Right to 135 degrees
-  delay(1000);          // Wait 1 second
-  servoMain.write(180); // Turn Servo Right to 180 degrees
-  delay(1000);          // Wait 1 second
-  servoMain.write(90);  // Turn Servo back to center position (90 degrees)
-  delay(1000);          // Wait 1 second
-}
 
 //--------------------------------------------------------------------------
 // Store preferences in NVS Flash
@@ -169,6 +151,20 @@ uint8_t txBuffer[9];
 const char ssid[] = "MrFlexi";
 const char wifiPassword[] = "Linde-123";
 WiFiClient wifiClient;
+
+void setup_wifi()
+{
+
+#if (USE_WIFI)
+  // WIFI Setup
+  WiFi.begin(ssid, wifiPassword);
+  while (WiFi.status() != WL_CONNECTED)
+  {
+    delay(1000);
+    ESP_LOGI(TAG, "Connecting to WiFi..");
+  }
+#endif
+}
 
 //--------------------------------------------------------------------------
 // MQTT
@@ -252,12 +248,6 @@ void setup_mqtt()
 }
 #endif
 
-void save_uptime()
-{
-  uptime_seconds_new = uptime_seconds_old + uptime_seconds_actual;
-  preferences.putULong("uptime", uptime_seconds_new);
-  Serial.println("ESP32 total uptime" + String(uptime_seconds_new) + " Seconds");
-}
 
 void setup_sensors()
 {
@@ -292,55 +282,51 @@ void setup_sensors()
 }
 
 
-void printLocalTime(){
+void getLocalTime(){
   struct tm timeinfo;
   if(!getLocalTime(&timeinfo)){
     Serial.println("Failed to obtain time");
     return;
   }
-
-
-  dataBuffer.data.timeinfo = timeinfo; 
-  Serial.println(dataBuffer.data.timeinfo.tm_year);
-
-
+  
+  dataBuffer.data.timeinfo = timeinfo;
+  dataBuffer.data.timeinfo.tm_year = dataBuffer.data.timeinfo.tm_year + 1900;
+  dataBuffer.data.timeinfo.tm_mon = dataBuffer.data.timeinfo.tm_mon + 1;
   Serial.println(&timeinfo, "%A, %B %d %Y %H:%M:%S");
-  Serial.print("Day of week: ");
-  Serial.println(&timeinfo, "%A");
-  Serial.print("Month: ");
-  Serial.println(&timeinfo, "%B");
-  Serial.print("Day of Month: ");
-  Serial.println(&timeinfo, "%d");
-  Serial.print("Year: ");
-  Serial.println(&timeinfo, "%Y");
-  Serial.print("Hour: ");
-  Serial.println(&timeinfo, "%H");
-  Serial.print("Hour (12 hour format): ");
-  Serial.println(&timeinfo, "%I");
-  Serial.print("Minute: ");
-  Serial.println(&timeinfo, "%M");
-  Serial.print("Second: ");
-  Serial.println(&timeinfo, "%S");
+  }
 
-  Serial.println("Time variables");
-  char timeHour[3];
-  strftime(timeHour,3, "%H", &timeinfo);
-  Serial.println(timeHour);
-  char timeWeekDay[10];
-  strftime(timeWeekDay,10, "%A", &timeinfo);
-  Serial.println(timeWeekDay);
-  Serial.println();
+void adjust_panel()
+{
+  int degree;
+  degree = 90 - dataBuffer.data.sun_elevation ;
+  Serial.printf("Panel degree: %d\n", degree);
+  servoMain.write(degree); // Turn Servo Left to 45 degrees
+ 
 }
 
-void t_sleep()
+void t_cyclic()
 {
   dataBuffer.data.sleepCounter--;
 
   // Init and get the time
-  configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
-  printLocalTime();
+  getLocalTime();
 
+   //----------------------------------------
+  // Calc Sun Position München
+  //----------------------------------------
+  Serial.println();Serial.println();
+  Serial.println("Sun Azimuth and Elevation Munich");
+  helios.calcSunPos(2020, dataBuffer.data.timeinfo.tm_mon, dataBuffer.data.timeinfo.tm_mday, dataBuffer.data.timeinfo.tm_hour-2, dataBuffer.data.timeinfo.tm_min, 00.00, 11.57754, 48.13641);
+  dataBuffer.data.sun_azimuth = helios.dAzimuth;
+  dataBuffer.data.sun_elevation = helios.dElevation;
+ 
 
+  Serial.printf("Azimuth: %f3\n", helios.dAzimuth);
+  Serial.printf("Elevation: %f3\n", helios.dElevation);
+
+  adjust_panel();
+  delay(2000);
+  
   //-----------------------------------------------------
   // Deep sleep
   //-----------------------------------------------------
@@ -359,9 +345,14 @@ void t_sleep()
 
 void t_display()
 {
-  static char volbuffer[20];
+  // Voltage and Current
+  dataBuffer.data.busvoltage1 = ina3221.getBusVoltage_V(1);
+  dataBuffer.data.current_1 = ina3221.getCurrent_mA(1);
+  dataBuffer.data.current_2 = ina3221.getCurrent_mA(2);
+  dataBuffer.data.current_3 = ina3221.getCurrent_mA(3);
 
-  String stringOne;
+   Serial.printf("Panel Voltage: %.2fV\n", dataBuffer.data.busvoltage1 );
+   Serial.printf("Panel Current: %.0fmA\n", dataBuffer.data.current_1 );
 
 // Temperatur
 #if (USE_BME280)
@@ -369,42 +360,26 @@ void t_display()
   log_display(volbuffer);
 #endif
 
-  // Voltage and Current
-  dataBuffer.data.busvoltage1 = ina3221.getBusVoltage_V(1);
-  dataBuffer.data.current_1 = ina3221.getCurrent_mA(1);
-  dataBuffer.data.current_2 = ina3221.getCurrent_mA(2);
-  dataBuffer.data.current_3 = ina3221.getCurrent_mA(3);
-
   // GPS
-  gps.encode();
+  //gps.encode();
 
   // Update Display
   showPage(PAGE_VALUES);
 }
 
-void setup_wifi()
+
+void servo_sweep()
 {
 
-#if (USE_WIFI)
-  // WIFI Setup
-  WiFi.begin(ssid, wifiPassword);
-  while (WiFi.status() != WL_CONNECTED)
-  {
-    delay(1000);
-    ESP_LOGI(TAG, "Connecting to WiFi..");
-  }
-#endif
+  servoMain.write(90); // Turn Servo Left to 45 degrees
+  delay(2000);        // Wait 1 second
+  servoMain.write(80); // Turn Servo Left to 45 degrees
+  delay(2000);          // Wait 1 second
+  servoMain.write(100);  // Turn Servo Left to 45 degrees
+  delay(2000);          // Wait 1 second
+  servoMain.write(90);   // Turn Servo Left to 0 degrees
 }
 
-void show(char nameStr[], double val, boolean newline)
-{
-  Serial.print(nameStr);
-  Serial.print("=");
-  if (newline)
-    Serial.println(val);
-  else
-    Serial.print(val);
-}
 
 void setup()
 {
@@ -417,16 +392,10 @@ void setup()
 
   print_wakeup_reason();
 
-  //---------------------------------------------------------------
-  // Get preferences from Flash
-  //---------------------------------------------------------------
-  preferences.begin("config", false); // NVS Flash RW mode
-  preferences.getULong("uptime", uptime_seconds_old);
-  Serial.println("Uptime old: " + String(uptime_seconds_old));
-  preferences.getString("info", lastword, sizeof(lastword));
-
   ESP_LOGI(TAG, "Starting..");
   Serial.println(F("ESP32 Sensor Board"));
+
+ 
 
   //----------------------------------------
   // Read I2C Devices
@@ -451,8 +420,9 @@ void setup()
   dataBuffer.data.sleepCounter = TIME_TO_NEXT_SLEEP;
 
   setup_display();
-  setup_sensors();
+  //setup_sensors();
   setup_wifi();
+  configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
 
   //----------------------------------------
   // OTA Over the air Update
@@ -482,11 +452,11 @@ void setup()
   //----------------------------------------
   // Tasks
   //----------------------------------------
-  sleepTicker.attach(60, t_sleep);
+  sleepTicker.attach(60, t_cyclic);
   displayTicker.attach(display_refresh, t_display);
 
   runmode = 1; // Switch from Terminal Mode to page Display
-  showPage(1);
+  //showPage(1);
 
 //---------------------------------------------------------------
 // Deep sleep settings
@@ -497,20 +467,7 @@ void setup()
                  " Minutes");
 #endif
 
-  //----------------------------------------
-  // Calc Sun Position München
-  //----------------------------------------
-
-  Serial.println("");
-  Serial.println("Sun Azimuth and Elevation Munich");
-  helios.calcSunPos(dataBuffer.data.timeinfo.tm_year, 05, 27, 16.00, 00.00, 00.00, 11.54184, 48.15496);
-
-  dAzimuth = helios.dAzimuth;
-  show("dAzimuth", dAzimuth, true);
-  dElevation = helios.dElevation;
-  show("dElevation", dElevation, true);
-  dataBuffer.data.sun_azimuth = helios.dAzimuth;
-  dataBuffer.data.sun_elevation = helios.dElevation;
+ 
 
   b = new Button(39); // Boot Button
 
@@ -527,6 +484,7 @@ void setup()
   servoMain.attach(SERVO_PIN); // servo on digital pin 10
 
   servo_sweep();
+  t_cyclic();
 }
 
 void loop()
@@ -539,5 +497,5 @@ void loop()
   client.loop();
 #endif
 
-  b->update();
+  //b->update();
 }
