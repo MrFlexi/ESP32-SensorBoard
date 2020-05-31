@@ -21,6 +21,25 @@ double dAzimuth;
 double dElevation;
 
 //----------------------------------------------------------------------
+// Motor
+//----------------------------------------------------------------------
+
+
+String command;
+String valStr;
+
+double position, speed, setPoint;
+double speed_min = 500;
+String readString; //This while store the user input data 
+int User_Input = 0;
+const long serialPing = 500;
+unsigned long now = 0;
+unsigned long lastMessage = 0;
+unsigned int dir = 1;
+
+double Kp = 4, Ki = 1, Kd = 5;
+
+//----------------------------------------------------------------------
 // Lichtschranke Pins
 //----------------------------------------------------------------------
 gpio_num_t aPinNumber = GPIO_NUM_33;
@@ -40,12 +59,12 @@ pcnt_config_t r_enc_config;
 //--------------------------------------------------------------------------
 #define SERVO_PIN GPIO_NUM_26
 Servo servoMain; // Define our Servo
+ServoEasing Servo1;
 
 //--------------------------------------------------------------------------
 // Sensors
 //--------------------------------------------------------------------------
 SDL_Arduino_INA3221 ina3221; // I2C
-
 
 //--------------------------------------------------------------------------
 // OTA Settings
@@ -61,9 +80,6 @@ int16_t getCountRaw()
   pcnt_get_counter_value(unit, &c);
   return c;
 }
-
-
-
 
 void setup_pulsecounter()
 {
@@ -103,8 +119,6 @@ void setup_pulsecounter()
   pcnt_intr_enable(unit);
   pcnt_counter_resume(unit);
 }
-
-
 
 //--------------------------------------------------------------------------
 // Store preferences in NVS Flash
@@ -248,7 +262,6 @@ void setup_mqtt()
 }
 #endif
 
-
 void setup_sensors()
 {
 
@@ -281,40 +294,43 @@ void setup_sensors()
 #endif
 }
 
-
-void getLocalTime(){
+void getLocalTime()
+{
   struct tm timeinfo;
-  if(!getLocalTime(&timeinfo)){
+  if (!getLocalTime(&timeinfo))
+  {
     Serial.println("Failed to obtain time");
     return;
   }
-  
+
   dataBuffer.data.timeinfo = timeinfo;
   dataBuffer.data.timeinfo.tm_year = dataBuffer.data.timeinfo.tm_year + 1900;
   dataBuffer.data.timeinfo.tm_mon = dataBuffer.data.timeinfo.tm_mon + 1;
   Serial.println(&timeinfo, "%A, %B %d %Y %H:%M:%S");
-  }
+}
 
 void adjust_panel()
 {
   int degree;
-  degree = dataBuffer.data.sun_elevation ;
+  degree = dataBuffer.data.sun_elevation;
   Serial.printf("Panel degree: %d\n", degree);
-  if (degree < 20)
-    {
-     degree = 20;
-    }
+  if (degree < 40)
+  {
+    degree = 40;
+  }
 
   if (degree > 160)
-    {
-     degree = 160;
-    }
+  {
+    degree = 160;
+  }
 
-   servoMain.attach(SERVO_PIN); // servo on digital pin 10
-   servoMain.write(degree); 
-   delay(1000);
-   servoMain.detach(); // 
- }
+  Servo1.startEaseToD(degree, 3000);
+  while (areInterruptsActive())
+  {
+  };
+  //delay(1000);
+  //Servo1.detach();
+}
 
 void t_cyclic()
 {
@@ -323,22 +339,22 @@ void t_cyclic()
   // Init and get the time
   getLocalTime();
 
-   //----------------------------------------
+  //----------------------------------------
   // Calc Sun Position München
   //----------------------------------------
-  Serial.println();Serial.println();
+  Serial.println();
+  Serial.println();
   Serial.println("Sun Azimuth and Elevation Munich");
-  helios.calcSunPos(2020, dataBuffer.data.timeinfo.tm_mon, dataBuffer.data.timeinfo.tm_mday, dataBuffer.data.timeinfo.tm_hour-2, dataBuffer.data.timeinfo.tm_min, 00.00, 11.57754, 48.13641);
+  helios.calcSunPos(2020, dataBuffer.data.timeinfo.tm_mon, dataBuffer.data.timeinfo.tm_mday, dataBuffer.data.timeinfo.tm_hour - 2, dataBuffer.data.timeinfo.tm_min, 00.00, 11.57754, 48.13641);
   //helios.calcSunPos(2020, dataBuffer.data.timeinfo.tm_mon, dataBuffer.data.timeinfo.tm_mday, 12, dataBuffer.data.timeinfo.tm_min, 00.00, 11.57754, 48.13641);
   dataBuffer.data.sun_azimuth = helios.dAzimuth;
   dataBuffer.data.sun_elevation = helios.dElevation;
- 
 
   Serial.printf("Azimuth: %f3\n", helios.dAzimuth);
   Serial.printf("Elevation: %f3\n", helios.dElevation);
 
   adjust_panel();
-  
+
   //-----------------------------------------------------
   // Deep sleep
   //-----------------------------------------------------
@@ -368,8 +384,8 @@ void t_display()
   dataBuffer.data.current_3 = ina3221.getCurrent_mA(3);
   delay(1000);
 
-   Serial.printf("Panel Voltage: %.2fV\n", dataBuffer.data.busvoltage1 );
-   Serial.printf("Panel Current: %.0fmA\n", dataBuffer.data.current_1 );
+  Serial.printf("Panel Voltage: %.2fV\n", dataBuffer.data.busvoltage1);
+  Serial.printf("Panel Current: %.0fmA\n", dataBuffer.data.current_1);
 
 // Temperatur
 #if (USE_BME280)
@@ -384,19 +400,132 @@ void t_display()
   showPage(PAGE_VALUES);
 }
 
-
 void servo_sweep()
 {
 
-  servoMain.write(90); // Turn Servo Left to 45 degrees
-  delay(2000);        // Wait 1 second
-  servoMain.write(80); // Turn Servo Left to 45 degrees
-  delay(2000);          // Wait 1 second
-  servoMain.write(100);  // Turn Servo Left to 45 degrees
-  delay(2000);          // Wait 1 second
-  servoMain.write(90);   // Turn Servo Left to 0 degrees
+  //servoMain.write(90); // Turn Servo Left to 45 degrees
+  //delay(3000);        // Wait 1 second
+  //servoMain.write(80); // Turn Servo Left to 45 degrees
+  //delay(3000);          // Wait 1 second
+  //servoMain.write(100);  // Turn Servo Left to 45 degrees
+  //delay(3000);          // Wait 1 second
+  //servoMain.write(90);   // Turn Servo Left to 0 degrees
+
+  Servo1.startEaseToD(80, 2000);
+  while (areInterruptsActive())
+  {
+  };
+  delay(3000);
+  Servo1.startEaseToD(100, 2000);
+  while (areInterruptsActive())
+  {
+  };
+  delay(3000);
+  Servo1.startEaseToD(90, 2000);
+  while (areInterruptsActive())
+  {
+  };
+  delay(3000);
 }
 
+void io()
+{
+  now = millis(); //Keep track of time
+
+  if (now - lastMessage > serialPing)
+  {
+    if (Serial.available())
+    {
+      command = Serial.readStringUntil('\n');
+      switch (command.charAt(0))
+      {
+
+      case 'm':
+        if (command.length() > 1)
+        {
+          valStr = command.substring(1);
+          speed_min = valStr.toInt();
+        }
+        break;
+
+      case 's':
+        if (command.length() > 1)
+        {
+          valStr = command.substring(1);
+          setPoint = valStr.toInt();
+        }
+        break;
+      case 'p':
+        if (command.length() > 1)
+        {
+          valStr = command.substring(1);
+          Kp = valStr.toDouble();
+        }
+        break;
+      case 'd':
+        if (command.length() > 1)
+        {
+          valStr = command.substring(1);
+          Kd = valStr.toDouble();
+        }
+        break;
+      case 'i':
+        if (command.length() > 1)
+        {
+          valStr = command.substring(1);
+          Ki = valStr.toDouble();
+        }
+        break;
+      default:
+        Serial.println(command);
+      } // switch
+
+      command = "";
+    }
+    Serial.print(setPoint);
+    Serial.print(",");
+    Serial.print(position);
+    Serial.print(",");
+    Serial.println(speed / 10);
+    lastMessage = now;
+  }
+}
+
+void loop_motor()
+{
+
+  position = getCountRaw();
+  double gap = (setPoint - position);
+
+#if (USE_MOTOR)
+  if (gap != 0)
+  {
+
+    speed = (abs(gap) * Kp);
+    if (speed < speed_min)
+    {
+      speed = speed_min;
+    }
+
+    if (gap > 0)
+    {
+      dir = 1;
+      setSpeedRight(speed);
+    }
+    else
+    {
+      dir = 0;
+      setSpeedLeft(speed);
+    }
+  }
+  else
+  {
+    setSpeedOff();
+    speed = 0;
+  }
+
+#endif
+}
 
 void setup()
 {
@@ -408,7 +537,7 @@ void setup()
   Serial.println(" ");
 
   print_wakeup_reason();
-  
+
   ESP_LOGI(TAG, "Starting..");
   Serial.println(F("ESP32 Sensor Board"));
   setup_wifi();
@@ -417,11 +546,7 @@ void setup()
   // Read I2C Devices
   //----------------------------------------
   i2c_scan();
-
-  //-----------------------------------------------------
-  // Hardeware Puls Counter for Motor Position Controll
-  //-----------------------------------------------------
-  setup_pulsecounter();
+  setup_display();
 
   //----------------------------------------
   // INA3221 I2C Power Sensor
@@ -435,10 +560,9 @@ void setup()
   dataBuffer.data.txCounter = 0;
   dataBuffer.data.sleepCounter = TIME_TO_NEXT_SLEEP;
 
-  setup_display();
-  display_sample();
+  //display_sample();
   //setup_sensors();
-  
+
   configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
 
   //----------------------------------------
@@ -474,7 +598,6 @@ void setup()
 
   runmode = 1; // Switch from Terminal Mode to page Display
 
-
 //---------------------------------------------------------------
 // Deep sleep settings
 //---------------------------------------------------------------
@@ -483,8 +606,6 @@ void setup()
   Serial.println("Setup ESP32 to wake-up via timer after " + String(TIME_TO_SLEEP) +
                  " Minutes");
 #endif
-
- 
 
   b = new Button(39); // Boot Button
 
@@ -498,13 +619,33 @@ void setup()
     Serial.println("holding");
   });
 
-  servoMain.attach(SERVO_PIN); // servo on digital pin 10
+  //----------------------------------------------------------------
+  // Setup Servo
+  //----------------------------------------------------------------
 
- 
-//--------------------------------------------------------------------
-// Aktion after DeepSleep Wakeup
-//--------------------------------------------------------------------
-switch (esp_sleep_get_wakeup_cause())
+  //servoMain.attach(SERVO_PIN); // servo on digital pin 10
+  if (Servo1.attach(SERVO_PIN) == INVALID_SERVO)
+  {
+    Serial.println(F("Error attaching servo"));
+  }
+  Servo1.write(0);
+  Servo1.setEasingType(EASE_CUBIC_IN_OUT);
+
+  //----------------------------------------------------------------
+  // Setup Motor
+  //----------------------------------------------------------------
+  setup_motor();
+  motorA_fade();
+
+  //-----------------------------------------------------
+  // Hardeware Puls Counter for Motor Position Controll
+  //-----------------------------------------------------
+  setup_pulsecounter();
+
+  //--------------------------------------------------------------------
+  // Aktion after DeepSleep Wakeup
+  //--------------------------------------------------------------------
+  switch (esp_sleep_get_wakeup_cause())
   {
   case ESP_SLEEP_WAKEUP_TIMER:
     Serial.println("by timer");
@@ -519,6 +660,16 @@ switch (esp_sleep_get_wakeup_cause())
 
 void loop()
 {
+
+  io();
+
+#if (USE_MOTOR)
+  Serial.print(digitalRead(aPinNumber));
+  Serial.print(" ");
+  Serial.println(getCountRaw());
+  loop_motor();
+#endif
+
 #if (USE_MQTT)
   if (!client.connected())
   {

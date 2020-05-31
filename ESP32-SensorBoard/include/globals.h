@@ -9,6 +9,8 @@
 #define USE_CAYENNE 0
 #define USE_MQTT 0
 
+#define USE_MOTOR 1
+
 #define HAS_PMU 0
 #define HAS_GPS 0
 #define USE_INA 1
@@ -19,6 +21,11 @@
 #define TIME_TO_SLEEP 5        // sleep for n minute
 #define TIME_TO_NEXT_SLEEP  5      // sleep after n minutes or
 #define USE_OTA 1
+
+
+// Modor Shield 3 Ampere
+#define MotorALeft_pin    GPIO_NUM_35
+#define MotorARight_pin   GPIO_NUM_36
 
 #include <Arduino.h>
 #include <SPI.h>
@@ -32,7 +39,6 @@
 #include <Preferences.h>
 #include <ESP32Servo.h>
 #include <driver/gpio.h>
-
 #include "driver/pcnt.h"
 
 //--------------------------------------------------------
@@ -77,6 +83,8 @@ extern bool I2C_lock;
 #include "display.h"
 #include "gps.h"
 #include "Helios.h"
+#include "ServoEasing.h"
+#include "motor.h"
 
 
 #if (USE_MQTT)

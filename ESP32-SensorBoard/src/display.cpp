@@ -62,6 +62,7 @@ rc = oledInit(&ssoled, MY_OLED, OLED_ADDR, FLIP180, INVERT, USE_HW_I2C, SDA_PIN,
     oledWriteString(&ssoled, 0,0,0,msgs[rc], FONT_NORMAL, 0, 1);
     oledSetBackBuffer(&ssoled, ucBackBuffer);
     delay(2000);
+    oledWriteString(&ssoled, 0,1,1,(char *)"Sensor Board", FONT_NORMAL, 0, 1);
   }
 }
 
@@ -151,6 +152,7 @@ unsigned long ms;
 void showPage(int page)
 {
   
+  char szTemp[32];
   oledFill(&ssoled, 0x0, 1); // Clear 
 
   switch (page)
@@ -175,8 +177,17 @@ void showPage(int page)
     //u8g2.setCursor(1, 20);
     //u8g2.printf("Ele:%.2f", dataBuffer.data.sun_elevation);
 
-    oledWriteString(&ssoled, 0,1,1,(char *)"Sensor Board", FONT_NORMAL, 0, 1);
-    dp_printf(0, 50, FONT_SMALL, 0, "Ele:%.2f", dataBuffer.data.sun_elevation);
+   
+    //dp_printf(0, 1, FONT_NORMAL, 0, "Ele:%.2f", dataBuffer.data.sun_elevation);
+
+    sprintf(szTemp, "Ele:%.2f", dataBuffer.data.sun_elevation);
+    oledWriteString(&ssoled, 0,0,1,szTemp, FONT_NORMAL, 0, 1);
+
+     sprintf(szTemp, "%.2f V", dataBuffer.data.busvoltage1);
+    oledWriteString(&ssoled, 0,0,2,szTemp, FONT_NORMAL, 0, 1);
+    
+    sprintf(szTemp, "%.2f mA", dataBuffer.data.current_1);
+    oledWriteString(&ssoled, 0,0,3,szTemp, FONT_NORMAL, 0, 1);
     
     //u8g2.setCursor(1, 40);
     //u8g2.printf("%.2f V", dataBuffer.data.busvoltage1);
@@ -187,9 +198,7 @@ void showPage(int page)
     break;
 
   case PAGE_SLEEP:
-    //u8g2.setFont(u8g2_font_profont11_mf);
-    //u8g2.setCursor(1, 30);
-    //u8g2.printf("Sleeping until:%.2d", gps.tGps.satellites.value());
+    oledWriteString(&ssoled, 0,0,1,(char *)"SLEEP", FONT_LARGE, 0, 1);
 
     
     break;
