@@ -6,14 +6,9 @@
 #include <Arduino.h>
 #include "globals.h"
 
-
-
-
-
-
 void setup_motor();
-void setSpeedLeft(double iv_speed);
-void setSpeedRight(double iv_speed);
+void setSpeedLeft(uint16_t iv_speed);
+void setSpeedRight(uint16_t iv_speed);
 void setSpeedOff();
 void motorA_fade();
 

@@ -20,12 +20,13 @@
 #define ESP_SLEEP 1           // Main switch
 #define TIME_TO_SLEEP 5        // sleep for n minute
 #define TIME_TO_NEXT_SLEEP  5      // sleep after n minutes or
-#define USE_OTA 1
+#define USE_OTA 0
 
 
 // Modor Shield 3 Ampere
-#define MotorALeft_pin    GPIO_NUM_35
-#define MotorARight_pin   GPIO_NUM_36
+#define MotorALeft_pin    GPIO_NUM_25
+#define MotorARight_pin   GPIO_NUM_26
+#define SERVO_PIN         GPIO_NUM_27
 
 #include <Arduino.h>
 #include <SPI.h>
@@ -37,9 +38,9 @@
 #include <Adafruit_BME280.h>
 #include "esp_log.h"
 #include <Preferences.h>
-#include <ESP32Servo.h>
 #include <driver/gpio.h>
 #include "driver/pcnt.h"
+#include "ESP32MotorControl.h"
 
 //--------------------------------------------------------
 // Time Server

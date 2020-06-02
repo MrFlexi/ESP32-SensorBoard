@@ -1,33 +1,34 @@
 #include <Arduino.h>
 #include "motor.h"
 
+ ESP32MotorControl MotorControl = ESP32MotorControl();
+
 void setup_motor()
 {
   //pinMode(LED, OUTPUT);
-  pinMode(MotorALeft_pin, OUTPUT);
-  pinMode(MotorARight_pin, OUTPUT);
+  //pinMode(MotorALeft_pin, OUTPUT);
+  //pinMode(MotorARight_pin, OUTPUT);
 
-  digitalWrite(MotorARight_pin, 0);
-  digitalWrite(MotorALeft_pin, 0);
-  //analogWriteFreq(8000); // 8 KHz PWM Frequency
+  //digitalWrite(MotorARight_pin, 0);
+  //digitalWrite(MotorALeft_pin, 0);
+
+MotorControl.attachMotor(MotorALeft_pin, MotorARight_pin);
+MotorControl.motorsStop();
 }
 
-void setSpeedLeft(double iv_speed)
+void setSpeedLeft(uint16_t iv_speed)
 {
-  analogWrite(MotorALeft_pin, (int)iv_speed);
-  analogWrite(MotorARight_pin, 0);
+  MotorControl.motorForward(0, iv_speed);
 }
 
-void setSpeedRight(double iv_speed)
+void setSpeedRight(uint16_t iv_speed)
 {
-  analogWrite(MotorARight_pin, (int)iv_speed);
-  analogWrite(MotorALeft_pin, 0);
+  MotorControl.motorReverse(0, iv_speed);
 }
 
 void setSpeedOff()
 {
-  analogWrite(MotorARight_pin, 0);
-  analogWrite(MotorALeft_pin, 0);
+ MotorControl.motorsStop();
 }
 
 void motorA_fade()

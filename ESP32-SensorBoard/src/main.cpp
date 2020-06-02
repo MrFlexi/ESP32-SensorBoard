@@ -6,7 +6,7 @@
 //        22          SCL
 //        32          Lichtschranke   Richtung
 //        33          Lichtschranke   Puls
-//        34          Servo
+//        26          Servo
 
 #define LOG_LOCAL_LEVEL ESP_LOG_DEBUG
 
@@ -28,8 +28,8 @@ double dElevation;
 String command;
 String valStr;
 
-double position, speed, setPoint;
-double speed_min = 500;
+int16_t position, speed, setPoint;
+int16_t speed_min = 10;
 String readString; //This while store the user input data 
 int User_Input = 0;
 const long serialPing = 500;
@@ -37,7 +37,7 @@ unsigned long now = 0;
 unsigned long lastMessage = 0;
 unsigned int dir = 1;
 
-double Kp = 4, Ki = 1, Kd = 5;
+int16_t Kp = 2, Ki = 1, Kd = 5;
 
 //----------------------------------------------------------------------
 // Lichtschranke Pins
@@ -57,8 +57,7 @@ pcnt_config_t r_enc_config;
 //--------------------------------------------------------------------------
 // Sensors
 //--------------------------------------------------------------------------
-#define SERVO_PIN GPIO_NUM_26
-Servo servoMain; // Define our Servo
+
 ServoEasing Servo1;
 
 //--------------------------------------------------------------------------
@@ -81,6 +80,19 @@ int16_t getCountRaw()
   return c;
 }
 
+
+void pcnt_forward(void)
+{
+  pcnt_set_mode(unit,PCNT_CHANNEL_0,PCNT_COUNT_INC, PCNT_COUNT_DIS, PCNT_MODE_KEEP,PCNT_MODE_KEEP);
+}
+
+void pcnt_backward(void)
+{
+  pcnt_set_mode(unit,PCNT_CHANNEL_0,PCNT_COUNT_DEC, PCNT_COUNT_DIS, PCNT_MODE_KEEP,PCNT_MODE_KEEP);
+}
+
+
+
 void setup_pulsecounter()
 {
 
@@ -95,11 +107,11 @@ void setup_pulsecounter()
   r_enc_config.unit = unit;
   r_enc_config.channel = PCNT_CHANNEL_0;
 
-  r_enc_config.pos_mode = PCNT_COUNT_INC; //Count Only On Rising-Edges
+  r_enc_config.pos_mode = PCNT_COUNT_INC; //Count Only On Rising-Edges  INC = addieren
   r_enc_config.neg_mode = PCNT_COUNT_DIS; // Discard Falling-Edge
 
-  r_enc_config.lctrl_mode = PCNT_MODE_KEEP;    // Rising A on HIGH B = CW Step
-  r_enc_config.hctrl_mode = PCNT_MODE_REVERSE; // Rising A on LOW B = CCW Step
+  r_enc_config.lctrl_mode = PCNT_MODE_KEEP; // kein zweiter Kanal notwendig    // Rising A on HIGH B = CW Step
+  r_enc_config.hctrl_mode = PCNT_MODE_KEEP; // kein zweiter Kanal notwendig    //Rising A on LOW B = CCW Step
 
   r_enc_config.counter_h_lim = INT16_MAX;
   r_enc_config.counter_l_lim = INT16_MIN;
@@ -109,6 +121,7 @@ void setup_pulsecounter()
   // Filter out bounces and noise
   pcnt_set_filter_value(unit, 250); // Filter Runt Pulses
   pcnt_filter_enable(unit);
+
 
   /* Enable events on  maximum and minimum limit values */
   //pcnt_event_enable(unit, PCNT_EVT_H_LIM);
@@ -412,14 +425,10 @@ void servo_sweep()
   //servoMain.write(90);   // Turn Servo Left to 0 degrees
 
   Servo1.startEaseToD(80, 2000);
-  while (areInterruptsActive())
-  {
-  };
+  while (areInterruptsActive()) {};
   delay(3000);
   Servo1.startEaseToD(100, 2000);
-  while (areInterruptsActive())
-  {
-  };
+  while (areInterruptsActive()){};
   delay(3000);
   Servo1.startEaseToD(90, 2000);
   while (areInterruptsActive())
@@ -439,12 +448,31 @@ void io()
       command = Serial.readStringUntil('\n');
       switch (command.charAt(0))
       {
+        
+        case 'a':
+        if (command.length() == 1)
+        {
+          Serial.printf(" Counter %i ", getCountRaw());
+          //pcnt_forward();
+          setSpeedLeft((uint16_t) speed_min);
+          delay(5000);
+          Serial.printf(" Counter %i ", getCountRaw());
+          }
+        break;
 
       case 'm':
         if (command.length() > 1)
         {
           valStr = command.substring(1);
           speed_min = valStr.toInt();
+        }
+        break;
+
+      case 'g':
+        if (command.length() > 1)
+        {
+          valStr = command.substring(1);
+          speed = valStr.toInt();
         }
         break;
 
@@ -484,18 +512,21 @@ void io()
     }
     Serial.print(setPoint);
     Serial.print(",");
-    Serial.print(position);
+    Serial.print(getCountRaw());
     Serial.print(",");
-    Serial.println(speed / 10);
+    Serial.print(speed);
+    Serial.print(",");
+    Serial.println( setPoint - getCountRaw());
     lastMessage = now;
   }
 }
-
 void loop_motor()
 {
 
   position = getCountRaw();
-  double gap = (setPoint - position);
+  int16_t gap = (setPoint - position);
+
+
 
 #if (USE_MOTOR)
   if (gap != 0)
@@ -510,11 +541,13 @@ void loop_motor()
     if (gap > 0)
     {
       dir = 1;
+      //pcnt_forward();
       setSpeedRight(speed);
     }
     else
     {
       dir = 0;
+      //pcnt_backward();
       setSpeedLeft(speed);
     }
   }
@@ -635,7 +668,10 @@ void setup()
   // Setup Motor
   //----------------------------------------------------------------
   setup_motor();
-  motorA_fade();
+  // MotorControl instance
+
+   
+  //motorA_fade();
 
   //-----------------------------------------------------
   // Hardeware Puls Counter for Motor Position Controll
@@ -651,7 +687,7 @@ void setup()
     Serial.println("by timer");
     break;
   default:
-    servo_sweep();
+    //servo_sweep();
     break;
   }
   delay(5000);
@@ -664,10 +700,7 @@ void loop()
   io();
 
 #if (USE_MOTOR)
-  Serial.print(digitalRead(aPinNumber));
-  Serial.print(" ");
-  Serial.println(getCountRaw());
-  loop_motor();
+ loop_motor();
 #endif
 
 #if (USE_MQTT)
