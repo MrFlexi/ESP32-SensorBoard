@@ -184,15 +184,11 @@ void showPage(int page)
     oledWriteString(&ssoled, 0,0,1,szTemp, FONT_NORMAL, 0, 1);
 
      sprintf(szTemp, "%.2f V  %.2f mA", dataBuffer.data.busvoltage1, dataBuffer.data.current_1);
-    oledWriteString(&ssoled, 0,0,2,szTemp, FONT_NORMAL, 0, 1);
-    
-    //sprintf(szTemp, "", );
-    //oledWriteString(&ssoled, 0,0,3,szTemp, FONT_NORMAL, 0, 1);
-    
-    //u8g2.setCursor(1, 40);
-    //u8g2.printf("%.2f V", dataBuffer.data.busvoltage1);
-    //u8g2.setCursor(1, 60);
-    //u8g2.printf("%.2f mA", dataBuffer.data.current_1);
+    oledWriteString(&ssoled, 0,0,3,szTemp, FONT_NORMAL, 0, 1);
+
+    sprintf(szTemp, "%.1f Celsius  %.1f %", dataBuffer.data.temperature, dataBuffer.data.humidity);
+    oledWriteString(&ssoled, 0,0,5,szTemp, FONT_NORMAL, 0, 1);
+  
     
 
     break;

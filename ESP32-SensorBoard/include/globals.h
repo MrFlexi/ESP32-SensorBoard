@@ -2,18 +2,17 @@
 #ifndef _GLOBALS_H
 #define _GLOBALS_H
 
-#define HAS_DISPLAY U8G2_SSD1306_128X64_NONAME_F_HW_I2C
-
 #define USE_WIFI 1
-#define USE_BME280 0
+#define USE_BME280 1
 #define USE_CAYENNE 0
-#define USE_MQTT 0
+#define USE_MQTT 1
 
-#define USE_MOTOR 1
+#define USE_MOTOR 0
+#define USE_PULS_COUNTER 0
 
 #define HAS_PMU 0
 #define HAS_GPS 0
-#define USE_INA 1
+#define USE_INA 0
 
 #define display_refresh 10      // every second
 

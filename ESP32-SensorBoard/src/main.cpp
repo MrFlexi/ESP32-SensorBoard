@@ -48,11 +48,14 @@ gpio_num_t bPinNumber = GPIO_NUM_32;
 //----------------------------------------------------------------------
 // Puls Counter
 //----------------------------------------------------------------------
+
+#if (USE_PULS_COUNTER)
 unsigned long durationA;
 unsigned long durationB;
 volatile int32_t count = 0;
 pcnt_unit_t unit = PCNT_UNIT_0;
 pcnt_config_t r_enc_config;
+#endif
 
 //--------------------------------------------------------------------------
 // Sensors
@@ -73,13 +76,16 @@ const uint16_t OTA_CHECK_INTERVAL = 3000; // ms
 uint32_t _lastOTACheck = 0;
 bool wifi_connected = false;
 
+
+
+#if (USE_PULS_COUNTER)
+
 int16_t getCountRaw()
 {
   int16_t c;
   pcnt_get_counter_value(unit, &c);
   return c;
 }
-
 
 void pcnt_forward(void)
 {
@@ -90,7 +96,6 @@ void pcnt_backward(void)
 {
   pcnt_set_mode(unit,PCNT_CHANNEL_0,PCNT_COUNT_DEC, PCNT_COUNT_DIS, PCNT_MODE_KEEP,PCNT_MODE_KEEP);
 }
-
 
 
 void setup_pulsecounter()
@@ -132,6 +137,8 @@ void setup_pulsecounter()
   pcnt_intr_enable(unit);
   pcnt_counter_resume(unit);
 }
+
+#endif
 
 //--------------------------------------------------------------------------
 // Store preferences in NVS Flash
@@ -199,7 +206,9 @@ void setup_wifi()
 
 //const char *mqtt_server = "192.168.1.144"; // Laptop
 //const char *mqtt_server = "test.mosquitto.org"; // Laptop
-const char *mqtt_server = "192.168.1.100"; // Raspberry
+
+//const char *mqtt_server = "192.168.1.100"; // Raspberry
+const char *mqtt_server = "85.209.49.65"; // Netcup Server
 const char *mqtt_topic = "mrflexi/solarserver/";
 
 #if (USE_MQTT)
@@ -211,17 +220,17 @@ void callback(char *topic, byte *payload, unsigned int length)
 {
   Serial.print("Message arrived [");
 
-  u8g2log.print(topic);
-  u8g2log.print("\n");
+  //u8g2log.print(topic);
+  //u8g2log.print("\n");
   Serial.print(topic);
   Serial.print("] ");
   for (int i = 0; i < length; i++)
   {
     Serial.print((char)payload[i]);
-    u8g2log.print((char)payload[i]);
+    //u8g2log.print((char)payload[i]);
   }
   Serial.println();
-  u8g2log.print("\n");
+  //u8g2log.print("\n");
 
   // Switch on the LED if an 1 was received as first character
   if ((char)payload[0] == '1')
@@ -363,6 +372,10 @@ void t_cyclic()
   dataBuffer.data.sun_azimuth = helios.dAzimuth;
   dataBuffer.data.sun_elevation = helios.dElevation;
 
+  #if (USE_BME280)
+  dataBuffer.data.temperature = bme.readTemperature();
+  #endif
+
   Serial.printf("Azimuth: %f3\n", helios.dAzimuth);
   Serial.printf("Elevation: %f3\n", helios.dElevation);
 
@@ -386,25 +399,19 @@ void t_cyclic()
 
 void t_display()
 {
+
+  #if (USE_INA)
   // Voltage and Current
   ina3221.begin();
   dataBuffer.data.busvoltage1 = ina3221.getBusVoltage_V(1);
-  delay(100);
   dataBuffer.data.current_1 = ina3221.getCurrent_mA(1);
-  delay(100);
   dataBuffer.data.current_2 = ina3221.getCurrent_mA(2);
-  delay(100);
   dataBuffer.data.current_3 = ina3221.getCurrent_mA(3);
-  delay(1000);
-
+  
   Serial.printf("Panel Voltage: %.2fV\n", dataBuffer.data.busvoltage1);
   Serial.printf("Panel Current: %.0fmA\n", dataBuffer.data.current_1);
 
-// Temperatur
-#if (USE_BME280)
-  snprintf(volbuffer, sizeof(volbuffer), "%.1fC/%.1f%", bme.readTemperature(), bme.readHumidity());
-  log_display(volbuffer);
-#endif
+  #endif
 
   // GPS
   //gps.encode();
@@ -437,6 +444,7 @@ void servo_sweep()
   delay(3000);
 }
 
+
 void io()
 {
   now = millis(); //Keep track of time
@@ -452,11 +460,11 @@ void io()
         case 'a':
         if (command.length() == 1)
         {
-          Serial.printf(" Counter %i ", getCountRaw());
+          //Serial.printf(" Counter %i ", getCountRaw());
           //pcnt_forward();
           setSpeedLeft((uint16_t) speed_min);
           delay(5000);
-          Serial.printf(" Counter %i ", getCountRaw());
+          //Serial.printf(" Counter %i ", getCountRaw());
           }
         break;
 
@@ -512,18 +520,21 @@ void io()
     }
     Serial.print(setPoint);
     Serial.print(",");
-    Serial.print(getCountRaw());
+    //Serial.print(getCountRaw());
     Serial.print(",");
     Serial.print(speed);
     Serial.print(",");
-    Serial.println( setPoint - getCountRaw());
+    //Serial.println( setPoint - getCountRaw());
     lastMessage = now;
   }
 }
+
+
 void loop_motor()
 {
 
-  position = getCountRaw();
+
+  //position = getCountRaw();
   int16_t gap = (setPoint - position);
 
 
@@ -592,9 +603,6 @@ void setup()
 
   dataBuffer.data.txCounter = 0;
   dataBuffer.data.sleepCounter = TIME_TO_NEXT_SLEEP;
-
-  //display_sample();
-  //setup_sensors();
 
   configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
 
@@ -667,7 +675,9 @@ void setup()
   //----------------------------------------------------------------
   // Setup Motor
   //----------------------------------------------------------------
+  #if (USE_MOTOR)
   setup_motor();
+  #endif
   // MotorControl instance
 
    
@@ -676,7 +686,9 @@ void setup()
   //-----------------------------------------------------
   // Hardeware Puls Counter for Motor Position Controll
   //-----------------------------------------------------
+  #if (USE_PULS_COUNTER)
   setup_pulsecounter();
+  #endif
 
   //--------------------------------------------------------------------
   // Aktion after DeepSleep Wakeup
@@ -697,7 +709,9 @@ void setup()
 void loop()
 {
 
-  io();
+  
+  Serial.println(digitalRead(aPinNumber));
+  //io();
 
 #if (USE_MOTOR)
  loop_motor();
