@@ -9,10 +9,11 @@
 
 #define USE_MOTOR 0
 #define USE_PULS_COUNTER 0
+#define USE_SERVO 0
 
 #define HAS_PMU 0
 #define HAS_GPS 0
-#define USE_INA 0
+#define USE_INA 1
 
 #define display_refresh 10      // every second
 

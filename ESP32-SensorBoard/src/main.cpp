@@ -358,47 +358,8 @@ void t_cyclic()
 {
   dataBuffer.data.sleepCounter--;
 
-  // Init and get the time
-  getLocalTime();
-
-  //----------------------------------------
-  // Calc Sun Position München
-  //----------------------------------------
-  Serial.println();
-  Serial.println();
-  Serial.println("Sun Azimuth and Elevation Munich");
-  helios.calcSunPos(2020, dataBuffer.data.timeinfo.tm_mon, dataBuffer.data.timeinfo.tm_mday, dataBuffer.data.timeinfo.tm_hour - 2, dataBuffer.data.timeinfo.tm_min, 00.00, 11.57754, 48.13641);
-  //helios.calcSunPos(2020, dataBuffer.data.timeinfo.tm_mon, dataBuffer.data.timeinfo.tm_mday, 12, dataBuffer.data.timeinfo.tm_min, 00.00, 11.57754, 48.13641);
-  dataBuffer.data.sun_azimuth = helios.dAzimuth;
-  dataBuffer.data.sun_elevation = helios.dElevation;
-
-  #if (USE_BME280)
-  dataBuffer.data.temperature = bme.readTemperature();
-  #endif
-
-  Serial.printf("Azimuth: %f3\n", helios.dAzimuth);
-  Serial.printf("Elevation: %f3\n", helios.dElevation);
-
-  adjust_panel();
-
-  //-----------------------------------------------------
-  // Deep sleep
-  //-----------------------------------------------------
-#if (ESP_SLEEP)
-  if (dataBuffer.data.sleepCounter <= 0)
-  {
-    runmode = 0;
-    //gps.enable_sleep();
-    Serial.flush();
-    showPage(PAGE_SLEEP);
-    esp_deep_sleep_start();
-    Serial.println("This will never be printed");
-  }
-#endif
-}
-
-void t_display()
-{
+  // GPS
+  //gps.encode();
 
   #if (USE_INA)
   // Voltage and Current
@@ -413,11 +374,59 @@ void t_display()
 
   #endif
 
-  // GPS
-  //gps.encode();
+  // Init and get the time
+  getLocalTime();
 
-  // Update Display
+  //----------------------------------------
+  // Calc Sun Position München
+  //----------------------------------------
+  Serial.println();
+  Serial.println();
+  Serial.println("Sun Azimuth and Elevation Munich");
+  
+  //helios.calcSunPos(2020, dataBuffer.data.timeinfo.tm_mon, dataBuffer.data.timeinfo.tm_mday, dataBuffer.data.timeinfo.tm_hour - 2, dataBuffer.data.timeinfo.tm_min, 00.00, 11.57754, 48.13641);
+  //helios.calcSunPos(2020, dataBuffer.data.timeinfo.tm_mon, dataBuffer.data.timeinfo.tm_mday, 12, dataBuffer.data.timeinfo.tm_min, 00.00, 11.57754, 48.13641);
+  Serial.printf("Azimuth: %f3\n", helios.dAzimuth);
+  Serial.printf("Elevation: %f3\n", helios.dElevation);
+
+  dataBuffer.data.sun_azimuth = helios.dAzimuth;
+  dataBuffer.data.sun_elevation = helios.dElevation;
+
+  #if (USE_BME280)
+  Serial.println("BME read temperature");
+  //dataBuffer.data.temperature = bme.readTemperature();
+  #endif
+
+  //adjust_panel();
+
+  //-----------------------------------------------------
+  // Deep sleep
+  //-----------------------------------------------------
+#if (ESP_SLEEP)
+Serial.println("check deep sleep");
+  if (dataBuffer.data.sleepCounter <= 0)
+  {
+    runmode = 0;
+    //gps.enable_sleep();
+    Serial.flush();
+    showPage(PAGE_SLEEP);
+    esp_deep_sleep_start();
+    Serial.println("This will never be printed");
+  }
+#endif
+
+ // Update Display
+ Serial.println("Display Values");
   showPage(PAGE_VALUES);
+
+}
+
+void t_display()
+{
+
+
+
+ 
 }
 
 void servo_sweep()
@@ -532,12 +541,8 @@ void io()
 
 void loop_motor()
 {
-
-
   //position = getCountRaw();
   int16_t gap = (setPoint - position);
-
-
 
 #if (USE_MOTOR)
   if (gap != 0)
@@ -631,13 +636,7 @@ void setup()
   setup_mqtt();
 #endif
 
-  //----------------------------------------
-  // Tasks
-  //----------------------------------------
-  sleepTicker.attach(60, t_cyclic);
-  displayTicker.attach(display_refresh, t_display);
 
-  runmode = 1; // Switch from Terminal Mode to page Display
 
 //---------------------------------------------------------------
 // Deep sleep settings
@@ -648,29 +647,31 @@ void setup()
                  " Minutes");
 #endif
 
-  b = new Button(39); // Boot Button
+  //b = new Button(39); // Boot Button
 
-  b->setOnDoubleClicked([]() {
-    Serial.println("doubleclicked");
-  });
-  b->setOnClicked([]() {
-    Serial.println("clicked");
-  });
-  b->setOnHolding([]() {
-    Serial.println("holding");
-  });
+  //b->setOnDoubleClicked([]() {
+  //  Serial.println("doubleclicked");
+  //});
+  //b->setOnClicked([]() {
+  //  Serial.println("clicked");
+  //});
+  //b->setOnHolding([]() {
+  //  Serial.println("holding");
+  //});
 
   //----------------------------------------------------------------
   // Setup Servo
   //----------------------------------------------------------------
 
-  //servoMain.attach(SERVO_PIN); // servo on digital pin 10
+  #if(USE_SERVO)
+  servoMain.attach(SERVO_PIN); // servo on digital pin 10
   if (Servo1.attach(SERVO_PIN) == INVALID_SERVO)
   {
     Serial.println(F("Error attaching servo"));
   }
   Servo1.write(0);
   Servo1.setEasingType(EASE_CUBIC_IN_OUT);
+  #endif
 
   //----------------------------------------------------------------
   // Setup Motor
@@ -699,18 +700,25 @@ void setup()
     Serial.println("by timer");
     break;
   default:
-    //servo_sweep();
     break;
   }
-  delay(5000);
+  
+  Serial.println("Setup done....");
+
+  //----------------------------------------
+  // Tasks
+  //----------------------------------------
+  sleepTicker.attach(display_refresh, t_cyclic);
+  displayTicker.attach(display_refresh, t_display);
+
+  runmode = 1; // Switch from Terminal Mode to page Display
   t_cyclic();
 }
 
 void loop()
 {
 
-  
-  Serial.println(digitalRead(aPinNumber));
+  //Serial.println(digitalRead(aPinNumber));
   //io();
 
 #if (USE_MOTOR)
@@ -724,6 +732,5 @@ void loop()
   }
   client.loop();
 #endif
-
   //b->update();
 }
