@@ -15,10 +15,10 @@
 //--------------------------------------------------------------------------
 // Sun Elevation Calculation
 //--------------------------------------------------------------------------
-Helios helios;
+//Helios helios;
 
-double dAzimuth;
-double dElevation;
+//double dAzimuth;
+//double dElevation;
 
 //----------------------------------------------------------------------
 // Motor
@@ -68,15 +68,8 @@ ServoEasing Servo1;
 //--------------------------------------------------------------------------
 SDL_Arduino_INA3221 ina3221; // I2C
 
-//--------------------------------------------------------------------------
-// OTA Settings
-//--------------------------------------------------------------------------
-#include "SecureOTA.h"
-const uint16_t OTA_CHECK_INTERVAL = 3000; // ms
-uint32_t _lastOTACheck = 0;
+
 bool wifi_connected = false;
-
-
 
 #if (USE_PULS_COUNTER)
 
@@ -386,11 +379,11 @@ void t_cyclic()
   
   //helios.calcSunPos(2020, dataBuffer.data.timeinfo.tm_mon, dataBuffer.data.timeinfo.tm_mday, dataBuffer.data.timeinfo.tm_hour - 2, dataBuffer.data.timeinfo.tm_min, 00.00, 11.57754, 48.13641);
   //helios.calcSunPos(2020, dataBuffer.data.timeinfo.tm_mon, dataBuffer.data.timeinfo.tm_mday, 12, dataBuffer.data.timeinfo.tm_min, 00.00, 11.57754, 48.13641);
-  Serial.printf("Azimuth: %f3\n", helios.dAzimuth);
-  Serial.printf("Elevation: %f3\n", helios.dElevation);
+  //Serial.printf("Azimuth: %f3\n", helios.dAzimuth);
+  //Serial.printf("Elevation: %f3\n", helios.dElevation);
 
-  dataBuffer.data.sun_azimuth = helios.dAzimuth;
-  dataBuffer.data.sun_elevation = helios.dElevation;
+  //dataBuffer.data.sun_azimuth = helios.dAzimuth;
+  //dataBuffer.data.sun_elevation = helios.dElevation;
 
   #if (USE_BME280)
   Serial.println("BME read temperature");
@@ -636,6 +629,9 @@ void setup()
   setup_mqtt();
 #endif
 
+#if (USE_FAN_PWM)
+setup_PWMfan();
+#endif
 
 
 //---------------------------------------------------------------

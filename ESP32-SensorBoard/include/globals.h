@@ -11,16 +11,18 @@
 #define USE_PULS_COUNTER 0
 #define USE_SERVO 0
 
+#define USE_FAN_PWM 1
+#define FAN_PWM_PIN GPIO_NUM_27
+
 #define HAS_PMU 0
 #define HAS_GPS 0
 #define USE_INA 1
 
 #define display_refresh 10      // every second
 
-#define ESP_SLEEP 1           // Main switch
+#define ESP_SLEEP 0           // Main switch
 #define TIME_TO_SLEEP 5        // sleep for n minute
 #define TIME_TO_NEXT_SLEEP  5      // sleep after n minutes or
-#define USE_OTA 0
 
 
 // Modor Shield 3 Ampere
@@ -83,7 +85,7 @@ extern bool I2C_lock;
 #include "jsutilities.h"
 #include "display.h"
 #include "gps.h"
-#include "Helios.h"
+//#include "Helios.h"
 #include "ServoEasing.h"
 #include "motor.h"
 
@@ -91,5 +93,12 @@ extern bool I2C_lock;
 #if (USE_MQTT)
 #include <PubSubClient.h>
 #endif
+
+
+#if (USE_FAN_PWM)
+#include <fanPWM.h>
+#endif
+
+
 
 #endif
