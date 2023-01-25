@@ -2,7 +2,6 @@
 
 SSOLED ssoled;
 
-
 // display helper functions
 void dp_printf(uint16_t x, uint16_t y, uint8_t font, uint8_t inv,
                const char *format, ...) {
@@ -188,18 +187,12 @@ void showPage(int page)
 
     sprintf(szTemp, "%.1f Celsius  %.1f %", dataBuffer.data.temperature, dataBuffer.data.humidity);
     oledWriteString(&ssoled, 0,0,5,szTemp, FONT_NORMAL, 0, 1);
-  
-    
-
     break;
 
   case PAGE_SLEEP:
-    oledWriteString(&ssoled, 0,0,1,(char *)"SLEEP", FONT_LARGE, 0, 1);
-
-    
+    oledWriteString(&ssoled, 0,0,1,(char *)"SLEEP", FONT_LARGE, 0, 1);    
     break;
-  }
-  //u8g2.sendBuffer();
+  }  
 }
 
 DataBuffer::DataBuffer()

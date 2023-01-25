@@ -3,7 +3,7 @@
 #define _GLOBALS_H
 
 #define USE_WIFI 1
-#define USE_BME280 1
+#define USE_BME280 0
 #define USE_CAYENNE 0
 #define USE_MQTT 1
 
@@ -13,14 +13,14 @@
 
 #define HAS_PMU 0
 #define HAS_GPS 0
-#define USE_INA 1
+#define USE_INA 0
 
-#define display_refresh 10      // every second
+#define display_refresh 10                  // every second
+#define cyclic_refresh_intervall  60      // every second
 
 #define ESP_SLEEP 1           // Main switch
 #define TIME_TO_SLEEP 5        // sleep for n minute
 #define TIME_TO_NEXT_SLEEP  5      // sleep after n minutes or
-#define USE_OTA 0
 
 
 // Modor Shield 3 Ampere
