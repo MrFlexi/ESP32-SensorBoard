@@ -23,14 +23,12 @@
 //----------------------------------------------------------------------
 // Motor
 //----------------------------------------------------------------------
-
-
 String command;
 String valStr;
 
 int16_t position, speed, setPoint;
 int16_t speed_min = 10;
-String readString; //This while store the user input data 
+String readString; // This while store the user input data
 int User_Input = 0;
 const long serialPing = 500;
 unsigned long now = 0;
@@ -48,7 +46,6 @@ gpio_num_t bPinNumber = GPIO_NUM_32;
 //----------------------------------------------------------------------
 // Puls Counter
 //----------------------------------------------------------------------
-
 #if (USE_PULS_COUNTER)
 unsigned long durationA;
 unsigned long durationB;
@@ -58,19 +55,21 @@ pcnt_config_t r_enc_config;
 #endif
 
 //--------------------------------------------------------------------------
-// Sensors
+// Servos
 //--------------------------------------------------------------------------
-
-ServoEasing Servo1;
+// ServoEasing Servo1;
 
 //--------------------------------------------------------------------------
 // Sensors
 //--------------------------------------------------------------------------
 SDL_Arduino_INA3221 ina3221; // I2C
 
+<<<<<<< HEAD
 
 bool wifi_connected = false;
 
+=======
+>>>>>>> 56eea9cec15a5bafd1188c97691a6bec4cff037b
 #if (USE_PULS_COUNTER)
 
 int16_t getCountRaw()
@@ -82,14 +81,13 @@ int16_t getCountRaw()
 
 void pcnt_forward(void)
 {
-  pcnt_set_mode(unit,PCNT_CHANNEL_0,PCNT_COUNT_INC, PCNT_COUNT_DIS, PCNT_MODE_KEEP,PCNT_MODE_KEEP);
+  pcnt_set_mode(unit, PCNT_CHANNEL_0, PCNT_COUNT_INC, PCNT_COUNT_DIS, PCNT_MODE_KEEP, PCNT_MODE_KEEP);
 }
 
 void pcnt_backward(void)
 {
-  pcnt_set_mode(unit,PCNT_CHANNEL_0,PCNT_COUNT_DEC, PCNT_COUNT_DIS, PCNT_MODE_KEEP,PCNT_MODE_KEEP);
+  pcnt_set_mode(unit, PCNT_CHANNEL_0, PCNT_COUNT_DEC, PCNT_COUNT_DIS, PCNT_MODE_KEEP, PCNT_MODE_KEEP);
 }
-
 
 void setup_pulsecounter()
 {
@@ -99,13 +97,13 @@ void setup_pulsecounter()
   gpio_set_direction(aPinNumber, GPIO_MODE_INPUT);
   gpio_pulldown_en(aPinNumber);
 
-  r_enc_config.pulse_gpio_num = aPinNumber; //Rotary Encoder Chan A
-  r_enc_config.ctrl_gpio_num = bPinNumber;  //Rotary Encoder Chan B
+  r_enc_config.pulse_gpio_num = aPinNumber; // Rotary Encoder Chan A
+  r_enc_config.ctrl_gpio_num = bPinNumber;  // Rotary Encoder Chan B
 
   r_enc_config.unit = unit;
   r_enc_config.channel = PCNT_CHANNEL_0;
 
-  r_enc_config.pos_mode = PCNT_COUNT_INC; //Count Only On Rising-Edges  INC = addieren
+  r_enc_config.pos_mode = PCNT_COUNT_INC; // Count Only On Rising-Edges  INC = addieren
   r_enc_config.neg_mode = PCNT_COUNT_DIS; // Discard Falling-Edge
 
   r_enc_config.lctrl_mode = PCNT_MODE_KEEP; // kein zweiter Kanal notwendig    // Rising A on HIGH B = CW Step
@@ -120,10 +118,9 @@ void setup_pulsecounter()
   pcnt_set_filter_value(unit, 250); // Filter Runt Pulses
   pcnt_filter_enable(unit);
 
-
   /* Enable events on  maximum and minimum limit values */
-  //pcnt_event_enable(unit, PCNT_EVT_H_LIM);
-  //pcnt_event_enable(unit, PCNT_EVT_L_LIM);
+  // pcnt_event_enable(unit, PCNT_EVT_H_LIM);
+  // pcnt_event_enable(unit, PCNT_EVT_L_LIM);
 
   pcnt_counter_pause(unit); // Initial PCNT init
   pcnt_counter_clear(unit);
@@ -138,7 +135,6 @@ void setup_pulsecounter()
 //--------------------------------------------------------------------------
 Preferences preferences;
 char lastword[10];
-
 unsigned long uptime_seconds_old;
 unsigned long uptime_seconds_new;
 unsigned long uptime_seconds_actual;
@@ -146,7 +142,7 @@ unsigned long uptime_seconds_actual;
 //--------------------------------------------------------------------------
 // Tasks
 //--------------------------------------------------------------------------
-Ticker sleepTicker;
+Ticker cyclicTicker;
 Ticker displayTicker;
 
 //--------------------------------------------------------------------------
@@ -159,11 +155,8 @@ Button *b = NULL;
 //--------------------------------------------------------------------------
 // ESP Sleep Mode
 //--------------------------------------------------------------------------
-
-const float sleepPeriod = 2;   //seconds
+const float sleepPeriod = 2;   // seconds
 #define uS_TO_S_FACTOR 1000000 //* Conversion factor for micro seconds to seconds */
-
-#define uS_TO_S_FACTOR 1000000 /* Conversion factor for micro seconds to seconds */
 #define SEALEVELPRESSURE_HPA (1013.25)
 
 int runmode = 0;
@@ -197,10 +190,10 @@ void setup_wifi()
 // MQTT
 //--------------------------------------------------------------------------
 
-//const char *mqtt_server = "192.168.1.144"; // Laptop
-//const char *mqtt_server = "test.mosquitto.org"; // Laptop
+// const char *mqtt_server = "192.168.1.144"; // Laptop
+// const char *mqtt_server = "test.mosquitto.org"; // Laptop
 
-//const char *mqtt_server = "192.168.1.100"; // Raspberry
+// const char *mqtt_server = "192.168.1.100"; // Raspberry
 const char *mqtt_server = "85.209.49.65"; // Netcup Server
 const char *mqtt_topic = "mrflexi/solarserver/";
 
@@ -213,17 +206,17 @@ void callback(char *topic, byte *payload, unsigned int length)
 {
   Serial.print("Message arrived [");
 
-  //u8g2log.print(topic);
-  //u8g2log.print("\n");
+  // u8g2log.print(topic);
+  // u8g2log.print("\n");
   Serial.print(topic);
   Serial.print("] ");
   for (int i = 0; i < length; i++)
   {
     Serial.print((char)payload[i]);
-    //u8g2log.print((char)payload[i]);
+    // u8g2log.print((char)payload[i]);
   }
   Serial.println();
-  //u8g2log.print("\n");
+  // u8g2log.print("\n");
 
   // Switch on the LED if an 1 was received as first character
   if ((char)payload[0] == '1')
@@ -317,55 +310,26 @@ void getLocalTime()
     Serial.println("Failed to obtain time");
     return;
   }
-
   dataBuffer.data.timeinfo = timeinfo;
   dataBuffer.data.timeinfo.tm_year = dataBuffer.data.timeinfo.tm_year + 1900;
   dataBuffer.data.timeinfo.tm_mon = dataBuffer.data.timeinfo.tm_mon + 1;
   Serial.println(&timeinfo, "%A, %B %d %Y %H:%M:%S");
 }
 
-void adjust_panel()
-{
-  int degree;
-  degree = dataBuffer.data.sun_elevation;
-  Serial.printf("Panel degree: %d\n", degree);
-  if (degree < 40)
-  {
-    degree = 40;
-  }
-
-  if (degree > 160)
-  {
-    degree = 160;
-  }
-
-  Servo1.startEaseToD(degree, 3000);
-  while (areInterruptsActive())
-  {
-  };
-  //delay(1000);
-  //Servo1.detach();
-}
-
 void t_cyclic()
 {
   dataBuffer.data.sleepCounter--;
 
-  // GPS
-  //gps.encode();
-
-  #if (USE_INA)
+#if (USE_INA)
   // Voltage and Current
   ina3221.begin();
   dataBuffer.data.busvoltage1 = ina3221.getBusVoltage_V(1);
   dataBuffer.data.current_1 = ina3221.getCurrent_mA(1);
   dataBuffer.data.current_2 = ina3221.getCurrent_mA(2);
   dataBuffer.data.current_3 = ina3221.getCurrent_mA(3);
-  
   Serial.printf("Panel Voltage: %.2fV\n", dataBuffer.data.busvoltage1);
   Serial.printf("Panel Current: %.0fmA\n", dataBuffer.data.current_1);
-
-  #endif
+#endif
 
   // Init and get the time
   getLocalTime();
@@ -376,31 +340,38 @@ void t_cyclic()
   Serial.println();
   Serial.println();
   Serial.println("Sun Azimuth and Elevation Munich");
+<<<<<<< HEAD
   
   //helios.calcSunPos(2020, dataBuffer.data.timeinfo.tm_mon, dataBuffer.data.timeinfo.tm_mday, dataBuffer.data.timeinfo.tm_hour - 2, dataBuffer.data.timeinfo.tm_min, 00.00, 11.57754, 48.13641);
   //helios.calcSunPos(2020, dataBuffer.data.timeinfo.tm_mon, dataBuffer.data.timeinfo.tm_mday, 12, dataBuffer.data.timeinfo.tm_min, 00.00, 11.57754, 48.13641);
   //Serial.printf("Azimuth: %f3\n", helios.dAzimuth);
   //Serial.printf("Elevation: %f3\n", helios.dElevation);
+=======
+
+  helios.calcSunPos(2023, dataBuffer.data.timeinfo.tm_mon, dataBuffer.data.timeinfo.tm_mday, dataBuffer.data.timeinfo.tm_hour - 2, dataBuffer.data.timeinfo.tm_min, 00.00, 11.57754, 48.13641);
+  // helios.calcSunPos(2023, dataBuffer.data.timeinfo.tm_mon, dataBuffer.data.timeinfo.tm_mday, 12, dataBuffer.data.timeinfo.tm_min, 00.00, 11.57754, 48.13641);
+  Serial.printf("Azimuth: %f3\n", helios.dAzimuth);
+  Serial.printf("Elevation: %f3\n", helios.dElevation);
+>>>>>>> 56eea9cec15a5bafd1188c97691a6bec4cff037b
 
   //dataBuffer.data.sun_azimuth = helios.dAzimuth;
   //dataBuffer.data.sun_elevation = helios.dElevation;
 
-  #if (USE_BME280)
+#if (USE_BME280)
   Serial.println("BME read temperature");
-  //dataBuffer.data.temperature = bme.readTemperature();
-  #endif
+// dataBuffer.data.temperature = bme.readTemperature();
+#endif
 
-  //adjust_panel();
+  // adjust_panel();
 
   //-----------------------------------------------------
   // Deep sleep
   //-----------------------------------------------------
 #if (ESP_SLEEP)
-Serial.println("check deep sleep");
+  Serial.println("check deep sleep");
   if (dataBuffer.data.sleepCounter <= 0)
   {
     runmode = 0;
-    //gps.enable_sleep();
     Serial.flush();
     showPage(PAGE_SLEEP);
     esp_deep_sleep_start();
@@ -408,48 +379,14 @@ Serial.println("check deep sleep");
   }
 #endif
 
- // Update Display
- Serial.println("Display Values");
+  // Update Display
+  Serial.println("Display Values");
   showPage(PAGE_VALUES);
-
 }
-
-void t_display()
-{
-
-
-
- 
-}
-
-void servo_sweep()
-{
-
-  //servoMain.write(90); // Turn Servo Left to 45 degrees
-  //delay(3000);        // Wait 1 second
-  //servoMain.write(80); // Turn Servo Left to 45 degrees
-  //delay(3000);          // Wait 1 second
-  //servoMain.write(100);  // Turn Servo Left to 45 degrees
-  //delay(3000);          // Wait 1 second
-  //servoMain.write(90);   // Turn Servo Left to 0 degrees
-
-  Servo1.startEaseToD(80, 2000);
-  while (areInterruptsActive()) {};
-  delay(3000);
-  Servo1.startEaseToD(100, 2000);
-  while (areInterruptsActive()){};
-  delay(3000);
-  Servo1.startEaseToD(90, 2000);
-  while (areInterruptsActive())
-  {
-  };
-  delay(3000);
-}
-
 
 void io()
 {
-  now = millis(); //Keep track of time
+  now = millis(); // Keep track of time
 
   if (now - lastMessage > serialPing)
   {
@@ -458,16 +395,16 @@ void io()
       command = Serial.readStringUntil('\n');
       switch (command.charAt(0))
       {
-        
-        case 'a':
+
+      case 'a':
         if (command.length() == 1)
         {
-          //Serial.printf(" Counter %i ", getCountRaw());
-          //pcnt_forward();
-          setSpeedLeft((uint16_t) speed_min);
+          // Serial.printf(" Counter %i ", getCountRaw());
+          // pcnt_forward();
+          setSpeedLeft((uint16_t)speed_min);
           delay(5000);
-          //Serial.printf(" Counter %i ", getCountRaw());
-          }
+          // Serial.printf(" Counter %i ", getCountRaw());
+        }
         break;
 
       case 'm':
@@ -522,41 +459,38 @@ void io()
     }
     Serial.print(setPoint);
     Serial.print(",");
-    //Serial.print(getCountRaw());
+    // Serial.print(getCountRaw());
     Serial.print(",");
     Serial.print(speed);
     Serial.print(",");
-    //Serial.println( setPoint - getCountRaw());
+    // Serial.println( setPoint - getCountRaw());
     lastMessage = now;
   }
 }
 
-
 void loop_motor()
 {
-  //position = getCountRaw();
+  // position = getCountRaw();
   int16_t gap = (setPoint - position);
 
 #if (USE_MOTOR)
   if (gap != 0)
   {
-
     speed = (abs(gap) * Kp);
     if (speed < speed_min)
     {
       speed = speed_min;
     }
-
     if (gap > 0)
     {
       dir = 1;
-      //pcnt_forward();
+      // pcnt_forward();
       setSpeedRight(speed);
     }
     else
     {
       dir = 0;
-      //pcnt_backward();
+      // pcnt_backward();
       setSpeedLeft(speed);
     }
   }
@@ -565,7 +499,6 @@ void loop_motor()
     setSpeedOff();
     speed = 0;
   }
-
 #endif
 }
 
@@ -579,6 +512,7 @@ void setup()
   Serial.println(" ");
 
   print_wakeup_reason();
+  dataBuffer.data.sleepCounter = TIME_TO_NEXT_SLEEP;
 
   ESP_LOGI(TAG, "Starting..");
   Serial.println(F("ESP32 Sensor Board"));
@@ -589,18 +523,17 @@ void setup()
   //----------------------------------------
   i2c_scan();
   setup_display();
+  display_sample();
 
   //----------------------------------------
   // INA3221 I2C Power Sensor
   //----------------------------------------
   ina3221.begin();
   Serial.print("Manufactures ID=0x");
-  int MID;
-  MID = ina3221.getManufID();
+  int MID = ina3221.getManufID();
   Serial.println(MID, HEX);
-
   dataBuffer.data.txCounter = 0;
-  dataBuffer.data.sleepCounter = TIME_TO_NEXT_SLEEP;
+  
 
   configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
 
@@ -616,24 +549,20 @@ void setup()
 #endif
 
 //----------------------------------------
-// GPS
-//----------------------------------------
-//gps.init();
-//gps.wakeup();
-//gps.ecoMode();
-
-//----------------------------------------
 // Connection to MQTT Broker
 //----------------------------------------
 #if (USE_MQTT)
   setup_mqtt();
 #endif
 
+<<<<<<< HEAD
 #if (USE_FAN_PWM)
 setup_PWMfan();
 #endif
 
 
+=======
+>>>>>>> 56eea9cec15a5bafd1188c97691a6bec4cff037b
 //---------------------------------------------------------------
 // Deep sleep settings
 //---------------------------------------------------------------
@@ -643,23 +572,10 @@ setup_PWMfan();
                  " Minutes");
 #endif
 
-  //b = new Button(39); // Boot Button
-
-  //b->setOnDoubleClicked([]() {
-  //  Serial.println("doubleclicked");
-  //});
-  //b->setOnClicked([]() {
-  //  Serial.println("clicked");
-  //});
-  //b->setOnHolding([]() {
-  //  Serial.println("holding");
-  //});
-
-  //----------------------------------------------------------------
-  // Setup Servo
-  //----------------------------------------------------------------
-
-  #if(USE_SERVO)
+//----------------------------------------------------------------
+// Setup Servo
+//----------------------------------------------------------------
+#if (USE_SERVO)
   servoMain.attach(SERVO_PIN); // servo on digital pin 10
   if (Servo1.attach(SERVO_PIN) == INVALID_SERVO)
   {
@@ -667,25 +583,22 @@ setup_PWMfan();
   }
   Servo1.write(0);
   Servo1.setEasingType(EASE_CUBIC_IN_OUT);
-  #endif
+#endif
 
-  //----------------------------------------------------------------
-  // Setup Motor
-  //----------------------------------------------------------------
-  #if (USE_MOTOR)
+//----------------------------------------------------------------
+// Setup Motor
+//----------------------------------------------------------------
+#if (USE_MOTOR)
   setup_motor();
-  #endif
-  // MotorControl instance
+#endif
+// MotorControl instance
 
-   
-  //motorA_fade();
-
-  //-----------------------------------------------------
-  // Hardeware Puls Counter for Motor Position Controll
-  //-----------------------------------------------------
-  #if (USE_PULS_COUNTER)
+//-----------------------------------------------------
+// Hardeware Puls Counter for Motor Position Controll
+//-----------------------------------------------------
+#if (USE_PULS_COUNTER)
   setup_pulsecounter();
-  #endif
+#endif
 
   //--------------------------------------------------------------------
   // Aktion after DeepSleep Wakeup
@@ -698,14 +611,14 @@ setup_PWMfan();
   default:
     break;
   }
-  
+
   Serial.println("Setup done....");
 
   //----------------------------------------
-  // Tasks
+  // Init Tasks
   //----------------------------------------
-  sleepTicker.attach(display_refresh, t_cyclic);
-  displayTicker.attach(display_refresh, t_display);
+  cyclicTicker.attach(cyclic_refresh_intervall, t_cyclic);
+  // displayTicker.attach(display_refresh, t_display);
 
   runmode = 1; // Switch from Terminal Mode to page Display
   t_cyclic();
@@ -713,12 +626,11 @@ setup_PWMfan();
 
 void loop()
 {
-
-  //Serial.println(digitalRead(aPinNumber));
-  //io();
+  // Serial.println(digitalRead(aPinNumber));
+  // io();
 
 #if (USE_MOTOR)
- loop_motor();
+  loop_motor();
 #endif
 
 #if (USE_MQTT)
@@ -728,5 +640,4 @@ void loop()
   }
   client.loop();
 #endif
-  //b->update();
 }
