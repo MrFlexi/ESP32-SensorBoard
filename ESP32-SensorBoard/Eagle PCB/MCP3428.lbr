@@ -1,0 +1,325 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE eagle SYSTEM "eagle.dtd">
+<eagle>
+    <drawing>
+        <grid unitdist="mm" unit="mm"/>
+        <layers>
+            <layer name="Top" color="4" number="1" visible="yes" active="yes" fill="1"/>
+            <layer name="Bottom" color="4" number="16" visible="yes" active="yes" fill="1"/>
+            <layer name="tPlace" color="7" number="21" visible="yes" active="yes" fill="1"/>
+            <layer name="bPlace" color="7" number="22" visible="yes" active="yes" fill="1"/>
+            <layer name="tNames" color="7" number="25" visible="yes" active="yes" fill="1"/>
+            <layer name="bNames" color="7" number="26" visible="yes" active="yes" fill="1"/>
+            <layer name="tValues" color="7" number="27" visible="yes" active="yes" fill="1"/>
+            <layer name="bValues" color="7" number="28" visible="yes" active="yes" fill="1"/>
+            <layer name="tStop" color="7" number="29" visible="yes" active="yes" fill="1"/>
+            <layer name="bStop" color="7" number="30" visible="yes" active="yes" fill="1"/>
+            <layer name="tCream" color="7" number="31" visible="yes" active="yes" fill="1"/>
+            <layer name="bCream" color="7" number="32" visible="yes" active="yes" fill="1"/>
+            <layer name="tKeepout" color="4" number="39" visible="yes" active="yes" fill="1"/>
+            <layer name="bKeepout" color="4" number="40" visible="yes" active="yes" fill="1"/>
+            <layer name="tRestrict" color="0" number="41" visible="yes" active="yes" fill="1"/>
+            <layer name="bRestrict" color="0" number="42" visible="yes" active="yes" fill="1"/>
+            <layer name="tDocu" color="7" number="51" visible="yes" active="yes" fill="1"/>
+            <layer name="bDocu" color="7" number="52" visible="yes" active="yes" fill="1"/>
+            <layer name="Nets" color="2" number="91" visible="yes" active="yes" fill="1"/>
+            <layer name="Busses" color="1" number="92" visible="yes" active="yes" fill="1"/>
+            <layer name="Pins" color="2" number="93" visible="yes" active="yes" fill="1"/>
+            <layer name="Symbols" color="4" number="94" visible="yes" active="yes" fill="1"/>
+            <layer name="Names" color="7" number="95" visible="yes" active="yes" fill="1"/>
+            <layer name="Values" color="7" number="96" visible="yes" active="yes" fill="1"/>
+            <layer name="Info" color="7" number="97" visible="yes" active="yes" fill="1"/>
+            <layer name="Guide" color="6" number="98" visible="yes" active="yes" fill="1"/>
+        </layers>
+        <library name="Upverter Library">
+            <description>Upverter Parts Library
+
+Created by Upverter.com</description>
+            <packages>
+                <package name="MICROCHIP_MCP3428-E-ST_0">
+                    <description>CON-ADC-MCP3428-14</description>
+                    <wire layer="21" y2="2.55" width="0.15" x2="-1.7" y1="-2.55" x1="-1.7"/>
+                    <wire layer="21" y2="2.55" width="0.15" x2="1.7" y1="-2.55" x1="1.7"/>
+                    <wire layer="21" y2="2.55" width="0.15" x2="1.7" y1="2.55" x1="-1.7"/>
+                    <wire layer="21" y2="-2.55" width="0.15" x2="1.7" y1="-2.55" x1="-1.7"/>
+                    <wire layer="51" y2="2.55" width="0.1" x2="-2.25" y1="-2.55" x1="-2.25"/>
+                    <wire layer="51" y2="2.55" width="0.1" x2="2.25" y1="-2.55" x1="2.25"/>
+                    <wire layer="51" y2="2.55" width="0.1" x2="2.25" y1="2.55" x1="-2.25"/>
+                    <wire layer="51" y2="-2.55" width="0.1" x2="2.25" y1="-2.55" x1="-2.25"/>
+                    <wire layer="39" y2="2.65" width="0.1" x2="-3.6" y1="-2.65" x1="-3.6"/>
+                    <wire layer="39" y2="2.65" width="0.1" x2="3.6" y1="2.65" x1="-3.6"/>
+                    <wire layer="39" y2="-2.65" width="0.1" x2="3.6" y1="2.65" x1="3.6"/>
+                    <wire layer="39" y2="-2.65" width="0.1" x2="-3.6" y1="-2.65" x1="3.6"/>
+                    <text layer="25" align="bottom-left" y="2.8" x="-4.6" rot="R0" size="1.0">&gt;NAME</text>
+                    <circle y="2.675" x="-2.8" layer="21" radius="0.125" width="0.25"/>
+                    <circle y="1.55" x="-0.7" layer="21" radius="0.3" width="0.6"/>
+                    <circle y="1.65" x="-1.35" layer="51" radius="0.5" width="0.1"/>
+                    <smd layer="1" thermals="yes" name="1" stop="yes" roundness="100" dx="0.35" dy="1.4" y="1.95" x="-2.8" rot="R90" cream="yes"/>
+                    <smd layer="1" thermals="yes" name="2" stop="yes" roundness="100" dx="0.35" dy="1.4" y="1.3" x="-2.8" rot="R90" cream="yes"/>
+                    <smd layer="1" thermals="yes" name="3" stop="yes" roundness="100" dx="0.35" dy="1.4" y="0.65" x="-2.8" rot="R90" cream="yes"/>
+                    <smd layer="1" thermals="yes" name="4" stop="yes" roundness="100" dx="0.35" dy="1.4" y="-0.0" x="-2.8" rot="R90" cream="yes"/>
+                    <smd layer="1" thermals="yes" name="5" stop="yes" roundness="100" dx="0.35" dy="1.4" y="-0.65" x="-2.8" rot="R90" cream="yes"/>
+                    <smd layer="1" thermals="yes" name="6" stop="yes" roundness="100" dx="0.35" dy="1.4" y="-1.3" x="-2.8" rot="R90" cream="yes"/>
+                    <smd layer="1" thermals="yes" name="7" stop="yes" roundness="100" dx="0.35" dy="1.4" y="-1.95" x="-2.8" rot="R90" cream="yes"/>
+                    <smd layer="1" thermals="yes" name="14" stop="yes" roundness="100" dx="0.35" dy="1.4" y="1.95" x="2.8" rot="R90" cream="yes"/>
+                    <smd layer="1" thermals="yes" name="13" stop="yes" roundness="100" dx="0.35" dy="1.4" y="1.3" x="2.8" rot="R90" cream="yes"/>
+                    <smd layer="1" thermals="yes" name="12" stop="yes" roundness="100" dx="0.35" dy="1.4" y="0.65" x="2.8" rot="R90" cream="yes"/>
+                    <smd layer="1" thermals="yes" name="11" stop="yes" roundness="100" dx="0.35" dy="1.4" y="-0.0" x="2.8" rot="R90" cream="yes"/>
+                    <smd layer="1" thermals="yes" name="10" stop="yes" roundness="100" dx="0.35" dy="1.4" y="-0.65" x="2.8" rot="R90" cream="yes"/>
+                    <smd layer="1" thermals="yes" name="9" stop="yes" roundness="100" dx="0.35" dy="1.4" y="-1.3" x="2.8" rot="R90" cream="yes"/>
+                    <smd layer="1" thermals="yes" name="8" stop="yes" roundness="100" dx="0.35" dy="1.4" y="-1.95" x="2.8" rot="R90" cream="yes"/>
+                </package>
+                <package name="MICROCHIP_MCP3428-E-ST_1">
+                    <description>CON-ADC-MCP3428-14</description>
+                    <wire layer="21" y2="2.55" width="0.15" x2="-1.6" y1="-2.55" x1="-1.6"/>
+                    <wire layer="21" y2="2.55" width="0.15" x2="1.6" y1="-2.55" x1="1.6"/>
+                    <wire layer="21" y2="2.55" width="0.15" x2="1.6" y1="2.55" x1="-1.6"/>
+                    <wire layer="21" y2="-2.55" width="0.15" x2="1.6" y1="-2.55" x1="-1.6"/>
+                    <wire layer="51" y2="2.55" width="0.1" x2="-2.25" y1="-2.55" x1="-2.25"/>
+                    <wire layer="51" y2="2.55" width="0.1" x2="2.25" y1="-2.55" x1="2.25"/>
+                    <wire layer="51" y2="2.55" width="0.1" x2="2.25" y1="2.55" x1="-2.25"/>
+                    <wire layer="51" y2="-2.55" width="0.1" x2="2.25" y1="-2.55" x1="-2.25"/>
+                    <wire layer="39" y2="2.8" width="0.1" x2="-3.95" y1="-2.8" x1="-3.95"/>
+                    <wire layer="39" y2="2.8" width="0.1" x2="3.95" y1="2.8" x1="-3.95"/>
+                    <wire layer="39" y2="-2.8" width="0.1" x2="3.95" y1="2.8" x1="3.95"/>
+                    <wire layer="39" y2="-2.8" width="0.1" x2="-3.95" y1="-2.8" x1="3.95"/>
+                    <text layer="25" align="bottom-left" y="2.8" x="-4.95" rot="R0" size="1.0">&gt;NAME</text>
+                    <circle y="2.675" x="-2.85" layer="21" radius="0.125" width="0.25"/>
+                    <circle y="1.55" x="-0.6" layer="21" radius="0.3" width="0.6"/>
+                    <circle y="1.65" x="-1.35" layer="51" radius="0.5" width="0.1"/>
+                    <smd layer="1" thermals="yes" name="1" stop="yes" roundness="100" dx="0.35" dy="1.7" y="1.95" x="-2.85" rot="R90" cream="yes"/>
+                    <smd layer="1" thermals="yes" name="2" stop="yes" roundness="100" dx="0.35" dy="1.7" y="1.3" x="-2.85" rot="R90" cream="yes"/>
+                    <smd layer="1" thermals="yes" name="3" stop="yes" roundness="100" dx="0.35" dy="1.7" y="0.65" x="-2.85" rot="R90" cream="yes"/>
+                    <smd layer="1" thermals="yes" name="4" stop="yes" roundness="100" dx="0.35" dy="1.7" y="0.0" x="-2.85" rot="R90" cream="yes"/>
+                    <smd layer="1" thermals="yes" name="5" stop="yes" roundness="100" dx="0.35" dy="1.7" y="-0.65" x="-2.85" rot="R90" cream="yes"/>
+                    <smd layer="1" thermals="yes" name="6" stop="yes" roundness="100" dx="0.35" dy="1.7" y="-1.3" x="-2.85" rot="R90" cream="yes"/>
+                    <smd layer="1" thermals="yes" name="7" stop="yes" roundness="100" dx="0.35" dy="1.7" y="-1.95" x="-2.85" rot="R90" cream="yes"/>
+                    <smd layer="1" thermals="yes" name="14" stop="yes" roundness="100" dx="0.35" dy="1.7" y="1.95" x="2.85" rot="R90" cream="yes"/>
+                    <smd layer="1" thermals="yes" name="13" stop="yes" roundness="100" dx="0.35" dy="1.7" y="1.3" x="2.85" rot="R90" cream="yes"/>
+                    <smd layer="1" thermals="yes" name="12" stop="yes" roundness="100" dx="0.35" dy="1.7" y="0.65" x="2.85" rot="R90" cream="yes"/>
+                    <smd layer="1" thermals="yes" name="11" stop="yes" roundness="100" dx="0.35" dy="1.7" y="0.0" x="2.85" rot="R90" cream="yes"/>
+                    <smd layer="1" thermals="yes" name="10" stop="yes" roundness="100" dx="0.35" dy="1.7" y="-0.65" x="2.85" rot="R90" cream="yes"/>
+                    <smd layer="1" thermals="yes" name="9" stop="yes" roundness="100" dx="0.35" dy="1.7" y="-1.3" x="2.85" rot="R90" cream="yes"/>
+                    <smd layer="1" thermals="yes" name="8" stop="yes" roundness="100" dx="0.35" dy="1.7" y="-1.95" x="2.85" rot="R90" cream="yes"/>
+                </package>
+                <package name="MICROCHIP_MCP3428-E-ST_2">
+                    <description>CON-ADC-MCP3428-14</description>
+                    <wire layer="21" y2="2.55" width="0.15" x2="-1.5" y1="-2.55" x1="-1.5"/>
+                    <wire layer="21" y2="2.55" width="0.15" x2="1.5" y1="-2.55" x1="1.5"/>
+                    <wire layer="21" y2="2.55" width="0.15" x2="1.5" y1="2.55" x1="-1.5"/>
+                    <wire layer="21" y2="-2.55" width="0.15" x2="1.5" y1="-2.55" x1="-1.5"/>
+                    <wire layer="51" y2="2.55" width="0.1" x2="-2.25" y1="-2.55" x1="-2.25"/>
+                    <wire layer="51" y2="2.55" width="0.1" x2="2.25" y1="-2.55" x1="2.25"/>
+                    <wire layer="51" y2="2.55" width="0.1" x2="2.25" y1="2.55" x1="-2.25"/>
+                    <wire layer="51" y2="-2.55" width="0.1" x2="2.25" y1="-2.55" x1="-2.25"/>
+                    <wire layer="39" y2="3.05" width="0.1" x2="-4.4" y1="-3.05" x1="-4.4"/>
+                    <wire layer="39" y2="3.05" width="0.1" x2="4.4" y1="3.05" x1="-4.4"/>
+                    <wire layer="39" y2="-3.05" width="0.1" x2="4.4" y1="3.05" x1="4.4"/>
+                    <wire layer="39" y2="-3.05" width="0.1" x2="-4.4" y1="-3.05" x1="4.4"/>
+                    <text layer="25" align="bottom-left" y="3.05" x="-5.4" rot="R0" size="1.0">&gt;NAME</text>
+                    <circle y="2.675" x="-2.9" layer="21" radius="0.125" width="0.25"/>
+                    <circle y="1.55" x="-0.5" layer="21" radius="0.3" width="0.6"/>
+                    <circle y="1.65" x="-1.35" layer="51" radius="0.5" width="0.1"/>
+                    <smd layer="1" thermals="yes" name="1" stop="yes" roundness="100" dx="0.35" dy="2.0" y="1.95" x="-2.9" rot="R90" cream="yes"/>
+                    <smd layer="1" thermals="yes" name="2" stop="yes" roundness="100" dx="0.35" dy="2.0" y="1.3" x="-2.9" rot="R90" cream="yes"/>
+                    <smd layer="1" thermals="yes" name="3" stop="yes" roundness="100" dx="0.35" dy="2.0" y="0.65" x="-2.9" rot="R90" cream="yes"/>
+                    <smd layer="1" thermals="yes" name="4" stop="yes" roundness="100" dx="0.35" dy="2.0" y="0.0" x="-2.9" rot="R90" cream="yes"/>
+                    <smd layer="1" thermals="yes" name="5" stop="yes" roundness="100" dx="0.35" dy="2.0" y="-0.65" x="-2.9" rot="R90" cream="yes"/>
+                    <smd layer="1" thermals="yes" name="6" stop="yes" roundness="100" dx="0.35" dy="2.0" y="-1.3" x="-2.9" rot="R90" cream="yes"/>
+                    <smd layer="1" thermals="yes" name="7" stop="yes" roundness="100" dx="0.35" dy="2.0" y="-1.95" x="-2.9" rot="R90" cream="yes"/>
+                    <smd layer="1" thermals="yes" name="14" stop="yes" roundness="100" dx="0.35" dy="2.0" y="1.95" x="2.9" rot="R90" cream="yes"/>
+                    <smd layer="1" thermals="yes" name="13" stop="yes" roundness="100" dx="0.35" dy="2.0" y="1.3" x="2.9" rot="R90" cream="yes"/>
+                    <smd layer="1" thermals="yes" name="12" stop="yes" roundness="100" dx="0.35" dy="2.0" y="0.65" x="2.9" rot="R90" cream="yes"/>
+                    <smd layer="1" thermals="yes" name="11" stop="yes" roundness="100" dx="0.35" dy="2.0" y="0.0" x="2.9" rot="R90" cream="yes"/>
+                    <smd layer="1" thermals="yes" name="10" stop="yes" roundness="100" dx="0.35" dy="2.0" y="-0.65" x="2.9" rot="R90" cream="yes"/>
+                    <smd layer="1" thermals="yes" name="9" stop="yes" roundness="100" dx="0.35" dy="2.0" y="-1.3" x="2.9" rot="R90" cream="yes"/>
+                    <smd layer="1" thermals="yes" name="8" stop="yes" roundness="100" dx="0.35" dy="2.0" y="-1.95" x="2.9" rot="R90" cream="yes"/>
+                </package>
+            </packages>
+            <symbols>
+                <symbol name="MICROCHIP_MCP3428-E-ST_0_0">
+                    <description>CON-ADC-MCP3428-14</description>
+                    <wire layer="94" y2="-5.08" width="0.508" x2="0.0" y1="-40.64" x1="0.0"/>
+                    <wire layer="94" y2="-5.08" width="0.508" x2="17.78" y1="-5.08" x1="0.0"/>
+                    <wire layer="94" y2="-40.64" width="0.508" x2="17.78" y1="-5.08" x1="17.78"/>
+                    <wire layer="94" y2="-40.64" width="0.508" x2="0.0" y1="-40.64" x1="17.78"/>
+                    <wire layer="94" y2="-38.1" width="0.15" x2="17.78" y1="-38.1" x1="17.78"/>
+                    <wire layer="94" y2="-7.62" width="0.15" x2="17.78" y1="-7.62" x1="17.78"/>
+                    <wire layer="94" y2="-10.16" width="0.15" x2="17.78" y1="-10.16" x1="17.78"/>
+                    <wire layer="94" y2="-38.1" width="0.15" x2="0.0" y1="-38.1" x1="0.0"/>
+                    <wire layer="94" y2="-15.24" width="0.15" x2="0.0" y1="-15.24" x1="0.0"/>
+                    <wire layer="94" y2="-22.86" width="0.15" x2="0.0" y1="-22.86" x1="0.0"/>
+                    <wire layer="94" y2="-7.62" width="0.15" x2="0.0" y1="-7.62" x1="0.0"/>
+                    <wire layer="94" y2="-10.16" width="0.15" x2="0.0" y1="-10.16" x1="0.0"/>
+                    <wire layer="94" y2="-17.78" width="0.15" x2="0.0" y1="-17.78" x1="0.0"/>
+                    <wire layer="94" y2="-25.4" width="0.15" x2="0.0" y1="-25.4" x1="0.0"/>
+                    <wire layer="94" y2="-30.48" width="0.15" x2="0.0" y1="-30.48" x1="0.0"/>
+                    <wire layer="94" y2="-33.02" width="0.15" x2="0.0" y1="-33.02" x1="0.0"/>
+                    <wire layer="94" y2="-15.24" width="0.15" x2="17.78" y1="-15.24" x1="17.78"/>
+                    <wire layer="94" y2="-17.78" width="0.15" x2="17.78" y1="-17.78" x1="17.78"/>
+                    <text layer="95" align="top-left" y="-2.54" x="0.0" rot="R0" size="2.54">&gt;NAME</text>
+                    <text layer="95" align="top-left" y="-45.72" x="0.0" rot="R0" size="2.54">MCP3428-E/ST</text>
+                    <pin direction="pwr" name="VSS" visible="both" length="middle" y="-38.1" x="22.86" rot="R180"/>
+                    <pin direction="io" name="SDA" visible="both" length="middle" y="-7.62" x="22.86" rot="R180"/>
+                    <pin direction="in" name="SCL" visible="both" length="middle" y="-10.16" x="22.86" rot="R180"/>
+                    <pin direction="pwr" name="VDD" visible="both" length="middle" y="-38.1" x="-5.08"/>
+                    <pin direction="in" name="CH2+" visible="both" length="middle" y="-15.24" x="-5.08"/>
+                    <pin direction="in" name="CH3+" visible="both" length="middle" y="-22.86" x="-5.08"/>
+                    <pin direction="in" name="CH1+" visible="both" length="middle" y="-7.62" x="-5.08"/>
+                    <pin direction="in" name="CH1-" visible="both" length="middle" y="-10.16" x="-5.08"/>
+                    <pin direction="in" name="CH2-" visible="both" length="middle" y="-17.78" x="-5.08"/>
+                    <pin direction="in" name="CH3-" visible="both" length="middle" y="-25.4" x="-5.08"/>
+                    <pin direction="in" name="CH4+" visible="both" length="middle" y="-30.48" x="-5.08"/>
+                    <pin direction="in" name="CH4-" visible="both" length="middle" y="-33.02" x="-5.08"/>
+                    <pin direction="pas" name="ADR0" visible="both" length="middle" y="-15.24" x="22.86" rot="R180"/>
+                    <pin direction="pas" name="ADR1" visible="both" length="middle" y="-17.78" x="22.86" rot="R180"/>
+                </symbol>
+            </symbols>
+            <devicesets>
+                <deviceset prefix="U" name="MICROCHIP_MCP3428-E-ST">
+                    <description>CON-ADC-MCP3428-14</description>
+                    <gates>
+                        <gate name="G$0" symbol="MICROCHIP_MCP3428-E-ST_0_0" x="0"/>
+                    </gates>
+                    <devices>
+                        <device name="MICROCHIP_MCP3428-E-ST_0_0" package="MICROCHIP_MCP3428-E-ST_0">
+                            <connects>
+                                <connect gate="G$0" pad="1" pin="CH1+"/>
+                                <connect gate="G$0" pad="10" pin="ADR1"/>
+                                <connect gate="G$0" pad="11" pin="CH3+"/>
+                                <connect gate="G$0" pad="12" pin="CH3-"/>
+                                <connect gate="G$0" pad="13" pin="CH4+"/>
+                                <connect gate="G$0" pad="14" pin="CH4-"/>
+                                <connect gate="G$0" pad="2" pin="CH1-"/>
+                                <connect gate="G$0" pad="3" pin="CH2+"/>
+                                <connect gate="G$0" pad="4" pin="CH2-"/>
+                                <connect gate="G$0" pad="5" pin="VSS"/>
+                                <connect gate="G$0" pad="6" pin="VDD"/>
+                                <connect gate="G$0" pad="7" pin="SDA"/>
+                                <connect gate="G$0" pad="8" pin="SCL"/>
+                                <connect gate="G$0" pad="9" pin="ADR0"/>
+                            </connects>
+                            <technologies>
+                                <technology>
+                                    <attribute name="ciiva_ids" value="2293999"/>
+                                    <attribute name="Package_Version" value="revBB, Aug-2009"/>
+                                    <attribute name="Component_Link_1_Description" value="Manufacturer URL"/>
+                                    <attribute name="vault_guid" value="EB2685E1-10B7-42B5-8344-5880799C6F96"/>
+                                    <attribute name="MPN" value="MCP3428-E/ST"/>
+                                    <attribute name="Component_Link_1_URL" value="http://www.microchip.com/"/>
+                                    <attribute name="imported" value="yes"/>
+                                    <attribute name="prefix" value="U"/>
+                                    <attribute name="import_ts" value="1521844225"/>
+                                    <attribute name="Datasheet_Version" value="revA, Dec-2009"/>
+                                    <attribute name="release_date" value="1331948705"/>
+                                    <attribute name="datasheet" value="http://ww1.microchip.com/downloads/en/DeviceDoc/22226a.pdf"/>
+                                    <attribute name="vault_revision" value="3FEDC9B5-E4CD-413F-AEF0-A0482F1C2AB1"/>
+                                    <attribute name="footprint_variant_name_0" value="Level C"/>
+                                    <attribute name="Package_Description" value="14-Lead Plastic Thin Shrink Small Outline (ST) - 4.4mm Body [TSSOP]"/>
+                                    <attribute name="pin_0_0_2_inside_edge" value="clock"/>
+                                    <attribute name="imported_from" value="vault"/>
+                                    <attribute name="Component_Link_3_Description" value="Package Specification"/>
+                                    <attribute name="footprint_variant_name_1" value="Level B"/>
+                                    <attribute name="footprint_variant_name_2" value="Level A"/>
+                                    <attribute name="MF" value="Microchip"/>
+                                    <attribute name="package" value="TSSOP-ST14"/>
+                                    <attribute name="Component_Link_3_URL" value="http://www.microchip.com/stellent/groups/techpub_sg/documents/packagingspec/en012702.pdf"/>
+                                </technology>
+                            </technologies>
+                        </device>
+                        <device name="MICROCHIP_MCP3428-E-ST_0_1" package="MICROCHIP_MCP3428-E-ST_1">
+                            <connects>
+                                <connect gate="G$0" pad="1" pin="CH1+"/>
+                                <connect gate="G$0" pad="10" pin="ADR1"/>
+                                <connect gate="G$0" pad="11" pin="CH3+"/>
+                                <connect gate="G$0" pad="12" pin="CH3-"/>
+                                <connect gate="G$0" pad="13" pin="CH4+"/>
+                                <connect gate="G$0" pad="14" pin="CH4-"/>
+                                <connect gate="G$0" pad="2" pin="CH1-"/>
+                                <connect gate="G$0" pad="3" pin="CH2+"/>
+                                <connect gate="G$0" pad="4" pin="CH2-"/>
+                                <connect gate="G$0" pad="5" pin="VSS"/>
+                                <connect gate="G$0" pad="6" pin="VDD"/>
+                                <connect gate="G$0" pad="7" pin="SDA"/>
+                                <connect gate="G$0" pad="8" pin="SCL"/>
+                                <connect gate="G$0" pad="9" pin="ADR0"/>
+                            </connects>
+                            <technologies>
+                                <technology>
+                                    <attribute name="ciiva_ids" value="2293999"/>
+                                    <attribute name="Package_Version" value="revBB, Aug-2009"/>
+                                    <attribute name="Component_Link_1_Description" value="Manufacturer URL"/>
+                                    <attribute name="vault_guid" value="EB2685E1-10B7-42B5-8344-5880799C6F96"/>
+                                    <attribute name="MPN" value="MCP3428-E/ST"/>
+                                    <attribute name="Component_Link_1_URL" value="http://www.microchip.com/"/>
+                                    <attribute name="imported" value="yes"/>
+                                    <attribute name="prefix" value="U"/>
+                                    <attribute name="import_ts" value="1521844225"/>
+                                    <attribute name="Datasheet_Version" value="revA, Dec-2009"/>
+                                    <attribute name="release_date" value="1331948705"/>
+                                    <attribute name="datasheet" value="http://ww1.microchip.com/downloads/en/DeviceDoc/22226a.pdf"/>
+                                    <attribute name="vault_revision" value="3FEDC9B5-E4CD-413F-AEF0-A0482F1C2AB1"/>
+                                    <attribute name="footprint_variant_name_0" value="Level C"/>
+                                    <attribute name="Package_Description" value="14-Lead Plastic Thin Shrink Small Outline (ST) - 4.4mm Body [TSSOP]"/>
+                                    <attribute name="pin_0_0_2_inside_edge" value="clock"/>
+                                    <attribute name="imported_from" value="vault"/>
+                                    <attribute name="Component_Link_3_Description" value="Package Specification"/>
+                                    <attribute name="footprint_variant_name_1" value="Level B"/>
+                                    <attribute name="footprint_variant_name_2" value="Level A"/>
+                                    <attribute name="MF" value="Microchip"/>
+                                    <attribute name="package" value="TSSOP-ST14"/>
+                                    <attribute name="Component_Link_3_URL" value="http://www.microchip.com/stellent/groups/techpub_sg/documents/packagingspec/en012702.pdf"/>
+                                </technology>
+                            </technologies>
+                        </device>
+                        <device name="MICROCHIP_MCP3428-E-ST_0_2" package="MICROCHIP_MCP3428-E-ST_2">
+                            <connects>
+                                <connect gate="G$0" pad="1" pin="CH1+"/>
+                                <connect gate="G$0" pad="10" pin="ADR1"/>
+                                <connect gate="G$0" pad="11" pin="CH3+"/>
+                                <connect gate="G$0" pad="12" pin="CH3-"/>
+                                <connect gate="G$0" pad="13" pin="CH4+"/>
+                                <connect gate="G$0" pad="14" pin="CH4-"/>
+                                <connect gate="G$0" pad="2" pin="CH1-"/>
+                                <connect gate="G$0" pad="3" pin="CH2+"/>
+                                <connect gate="G$0" pad="4" pin="CH2-"/>
+                                <connect gate="G$0" pad="5" pin="VSS"/>
+                                <connect gate="G$0" pad="6" pin="VDD"/>
+                                <connect gate="G$0" pad="7" pin="SDA"/>
+                                <connect gate="G$0" pad="8" pin="SCL"/>
+                                <connect gate="G$0" pad="9" pin="ADR0"/>
+                            </connects>
+                            <technologies>
+                                <technology>
+                                    <attribute name="ciiva_ids" value="2293999"/>
+                                    <attribute name="Package_Version" value="revBB, Aug-2009"/>
+                                    <attribute name="Component_Link_1_Description" value="Manufacturer URL"/>
+                                    <attribute name="vault_guid" value="EB2685E1-10B7-42B5-8344-5880799C6F96"/>
+                                    <attribute name="MPN" value="MCP3428-E/ST"/>
+                                    <attribute name="Component_Link_1_URL" value="http://www.microchip.com/"/>
+                                    <attribute name="imported" value="yes"/>
+                                    <attribute name="prefix" value="U"/>
+                                    <attribute name="import_ts" value="1521844225"/>
+                                    <attribute name="Datasheet_Version" value="revA, Dec-2009"/>
+                                    <attribute name="release_date" value="1331948705"/>
+                                    <attribute name="datasheet" value="http://ww1.microchip.com/downloads/en/DeviceDoc/22226a.pdf"/>
+                                    <attribute name="vault_revision" value="3FEDC9B5-E4CD-413F-AEF0-A0482F1C2AB1"/>
+                                    <attribute name="footprint_variant_name_0" value="Level C"/>
+                                    <attribute name="Package_Description" value="14-Lead Plastic Thin Shrink Small Outline (ST) - 4.4mm Body [TSSOP]"/>
+                                    <attribute name="pin_0_0_2_inside_edge" value="clock"/>
+                                    <attribute name="imported_from" value="vault"/>
+                                    <attribute name="Component_Link_3_Description" value="Package Specification"/>
+                                    <attribute name="footprint_variant_name_1" value="Level B"/>
+                                    <attribute name="footprint_variant_name_2" value="Level A"/>
+                                    <attribute name="MF" value="Microchip"/>
+                                    <attribute name="package" value="TSSOP-ST14"/>
+                                    <attribute name="Component_Link_3_URL" value="http://www.microchip.com/stellent/groups/techpub_sg/documents/packagingspec/en012702.pdf"/>
+                                </technology>
+                            </technologies>
+                        </device>
+                    </devices>
+                </deviceset>
+            </devicesets>
+        </library>
+    </drawing>
+</eagle>
